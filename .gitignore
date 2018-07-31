@@ -1,0 +1,8 @@
+# Python
+.pyc
+
+# Env
+.venv
+
+# IDE
+.idea
