@@ -8,10 +8,13 @@ from pyglet.window import mouse, key
 COLORS = ['red', 'purple', 'green']
 SHAPES = ['oval', 'diamond', 'squiggle']
 NUMBERS = ['one', 'two', 'three']
-SHADINGS = ['solid', 'striped', 'outlined']
+PATTERNS = ['solid', 'striped', 'outlined']
 
 # coordinates [x, y, right: x + width, top: y + height] of image on viewport
 Box = namedtuple("Box", "x y right top")
+
+SCALE_CARD_SELECTED = 0.85
+SCALE_CARD_UNSELECTED = 0.75
 
 
 class Card(pyglet.sprite.Sprite):
@@ -24,7 +27,7 @@ class Card(pyglet.sprite.Sprite):
         self.shape = card_shape
         self.pattern = card_pattern
         self.number = card_number
-        self.scale = 0.75
+        self.scale = SCALE_CARD_UNSELECTED
 
         self.box = Box(5000, 5000, 100, 100)
 
@@ -53,16 +56,13 @@ def read_card_images():
     seq = {'red': red_deck_seq, 'green': green_deck_seq, 'purple': purple_deck_seq}
 
     card_list = []
-
     for color, s in seq.items():
         card_seq = iter(reversed(s))
-
-        for pattern in SHADINGS:
+        for pattern in PATTERNS:
             for shape in SHAPES:
                 for number in NUMBERS:
                     card = card_seq.__next__()
                     card_list.append(Card(card, color, shape, pattern, number))
-
     return card_list
 
 
@@ -126,7 +126,10 @@ class GameWindow(pyglet.window.Window):
 
         self.batch = pyglet.graphics.Batch()
 
-        self.cards = Cards(rows=4, cols=4, batch=self.batch)
+        FeatSwitch = namedtuple("FeatSwitch", "pattern number shape color")
+        feat_switch = FeatSwitch(pattern=False, number=False, shape=False, color=True)
+
+        self.cards = Cards(rows=4, cols=4, feat_switch=feat_switch, batch=self.batch)
 
         self.score = Score('0', self.width-180, self.height-20, batch=self.batch)
 
@@ -134,6 +137,7 @@ class GameWindow(pyglet.window.Window):
         if button == mouse.LEFT:
             for card in self.cards:
                 if card.is_in_the_box(x, y):
+                    card.scale = SCALE_CARD_SELECTED
                     print(card)
 
     def on_key_press(self, symbol, modifiers):
