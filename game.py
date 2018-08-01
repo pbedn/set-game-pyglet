@@ -88,19 +88,26 @@ def read_card_images():
 
 
 class Score(pyglet.text.Label):
-    def __init__(self, text, x, y, batch, *args, **kwargs):
+    def __init__(self, x, y, batch, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.font_name = 'Arial'
         self.font_size = 30
         self.anchor_x = 'center'
         self.anchor_y = 'center'
         self.batch = batch
-        self.text = "Sets found: " + text
+        self._count = 0
+        self.text = ""
         self.x = x
         self.y = y
 
-    def reset(self):
-        self.text = '0'
+    @property
+    def count(self):
+        return self._count
+
+    @count.setter
+    def count(self, value):
+        self._count = value
+        self.text = "Sets found: " + str(self._count)
 
 
 class Cards:
@@ -158,7 +165,6 @@ class Cards:
                      getattr(self.card_clicked[1], attribute),
                      getattr(self.card_clicked[2], attribute)}
             result = result and len(set_a) != 2
-        print(">>>>", result)
         return result
 
 
@@ -178,7 +184,8 @@ class GameWindow(pyglet.window.Window):
 
         self.cards = Cards(rows=4, cols=4, feat_switch=feat_switch, batch=self.batch)
 
-        self.score = Score('0', self.width-180, self.height-20, batch=self.batch)
+        self.score = Score(self.width-180, self.height-20, batch=self.batch)
+        self.score.count = 0
 
     def on_mouse_press(self, x, y, button, modifiers):
         # TODO: Use OOP design pattern here (OBSERVER ?)
@@ -200,6 +207,8 @@ class GameWindow(pyglet.window.Window):
     def update(self, dt):
         if len(self.cards.card_clicked) == 3:
             if self.cards.check_if_clicked_are_set():
+                print(">>>> Found a set!")
+                self.score.count += 1
                 for c in self.cards.card_clicked:
                     c.opacity = 150
 
