@@ -66,6 +66,22 @@ def read_card_images():
     return card_list
 
 
+class Score(pyglet.text.Label):
+    def __init__(self, text, x, y, batch, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.font_name = 'Arial'
+        self.font_size = 30
+        self.anchor_x = 'center'
+        self.anchor_y = 'center'
+        self.batch = batch
+        self.text = "Sets found: " + text
+        self.x = x
+        self.y = y
+
+    def reset(self):
+        self.text = '0'
+
+
 class GameWindow(pyglet.window.Window):
     """
     Game Director managing all actions
@@ -86,6 +102,8 @@ class GameWindow(pyglet.window.Window):
         self.draw_random(4, 250)
         self.draw_random(4, 500)
         self.draw_random(4, 750)
+
+        self.score = Score('0', self.width-180, self.height-20, batch=self.batch)
 
     def draw_selected(self, color, shape, pattern, number, x, y):
         for card in self.cards:
