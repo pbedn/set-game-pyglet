@@ -9,7 +9,7 @@ COLORS = ['red', 'purple', 'green']
 SHAPES = ['oval', 'diamond', 'squiggle']
 NUMBERS = ['one', 'two', 'three']
 PATTERNS = ['solid', 'striped', 'outlined']
-FEATURES = {'color': COLORS, 'shape': SHAPES, 'number': NUMBERS, 'pattern': PATTERNS}
+FEATURES = {'color_name': COLORS, 'shape': SHAPES, 'number': NUMBERS, 'pattern': PATTERNS}
 
 # coordinates [x, y, right: x + width, top: y + height] of image on viewport
 Box = namedtuple("Box", "x y right top")
@@ -24,7 +24,7 @@ class Card(pyglet.sprite.Sprite):
     """
     def __init__(self, img, card_color, card_shape, card_pattern, card_number):
         super().__init__(img)
-        self.colour = card_color
+        self.color_name = card_color
         self.shape = card_shape
         self.pattern = card_pattern
         self.number = card_number
@@ -43,7 +43,7 @@ class Card(pyglet.sprite.Sprite):
             return True
 
     def __str__(self):
-        return "Card: {}, {}, {}, {}".format(self.colour, self.shape, self.pattern, self.number)
+        return "Card: {}, {}, {}, {}".format(self.color_name, self.shape, self.pattern, self.number)
 
 
 def select_features(func, switch):
@@ -139,7 +139,7 @@ class Cards:
     def draw_selected(self, color, shape, pattern, number, x, y):
         for card in self.cards:
             if card.shape == shape and card.pattern == pattern \
-                    and card.number == number and card.colour == color:
+                    and card.number == number and card.color_name == color:
                 card.set_position(x, y)
                 card.batch = self.batch
 
@@ -149,7 +149,7 @@ class Cards:
         for i, card in enumerate(cards):
             if i >= self.rows:
                 break
-            self.draw_selected(card.colour, card.shape, card.pattern, card.number, x+50, 150*i)
+            self.draw_selected(card.color_name, card.shape, card.pattern, card.number, x+50, 150*i)
             self.cards_used.append(card)
 
     def check_if_clicked_are_set(self):
@@ -179,8 +179,8 @@ class GameWindow(pyglet.window.Window):
 
         self.batch = pyglet.graphics.Batch()
 
-        FeatSwitch = namedtuple("FeatSwitch", "pattern number shape color")
-        feat_switch = FeatSwitch(pattern=False, number=True, shape=True, color=True)
+        FeatSwitch = namedtuple("FeatSwitch", "pattern number shape color_name")
+        feat_switch = FeatSwitch(pattern=False, number=True, shape=True, color_name=True)
 
         self.cards = Cards(rows=4, cols=4, feat_switch=feat_switch, batch=self.batch)
 
