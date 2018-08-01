@@ -54,9 +54,19 @@ class GameWindow(pyglet.window.Window):
         self.set_location(100, 100)
         self.frame_rate = 1/60.0
 
+        self.batch = pyglet.graphics.Batch()
+
         self.cards = read_card_images()
+        self.draw_selected('red', 'oval', 'solid', 'one', 50, 50)
+    def draw_selected(self, color, shape, pattern, number, x, y):
+        for card in self.cards:
+            if card.shape == shape and card.pattern == pattern \
+                    and card.number == number and card.colour == color:
+                card.set_position(x, y)
+                card.batch = self.batch
     def on_draw(self):
         self.clear()
+        self.batch.draw()
 
     def update(self, dt):
         pass
