@@ -82,6 +82,39 @@ class Score(pyglet.text.Label):
         self.text = '0'
 
 
+class Cards:
+    def __init__(self, rows, cols, batch):
+        self.rows = rows
+        self.cols = cols
+        self.batch = batch
+
+        self.cards = read_card_images()
+        self.cards_used = []
+
+        for i in range(self.cols):
+            self.draw_random(i*250)
+
+    def __iter__(self):
+        for card in self.cards:
+            yield card
+
+    def draw_selected(self, color, shape, pattern, number, x, y):
+        for card in self.cards:
+            if card.shape == shape and card.pattern == pattern \
+                    and card.number == number and card.colour == color:
+                card.set_position(x, y)
+                card.batch = self.batch
+
+    def draw_random(self, x):
+        cards = [c for c in self.cards if c not in self.cards_used]
+        random.shuffle(cards)
+        for i, card in enumerate(cards):
+            if i >= self.rows:
+                break
+            self.draw_selected(card.colour, card.shape, card.pattern, card.number, x+50, 150*i)
+            self.cards_used.append(card)
+
+
 class GameWindow(pyglet.window.Window):
     """
     Game Director managing all actions
@@ -93,33 +126,9 @@ class GameWindow(pyglet.window.Window):
 
         self.batch = pyglet.graphics.Batch()
 
-        self.cards = read_card_images()
-        self.cards_used = []
-
-        # self.draw_selected('red', 'oval', 'solid', 'one', 50, 50)
-
-        self.draw_random(4)
-        self.draw_random(4, 250)
-        self.draw_random(4, 500)
-        self.draw_random(4, 750)
+        self.cards = Cards(rows=4, cols=4, batch=self.batch)
 
         self.score = Score('0', self.width-180, self.height-20, batch=self.batch)
-
-    def draw_selected(self, color, shape, pattern, number, x, y):
-        for card in self.cards:
-            if card.shape == shape and card.pattern == pattern \
-                    and card.number == number and card.colour == color:
-                card.set_position(x, y)
-                card.batch = self.batch
-
-    def draw_random(self, count, x=0):
-        cards = [c for c in self.cards if c not in self.cards_used]
-        random.shuffle(cards)
-        for i, card in enumerate(cards):
-            if i >= count:
-                break
-            self.draw_selected(card.colour, card.shape, card.pattern, card.number, x+50, 150*i)
-            self.cards_used.append(card)
 
     def on_mouse_press(self, x, y, button, modifiers):
         if button == mouse.LEFT:
