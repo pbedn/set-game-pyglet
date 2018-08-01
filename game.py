@@ -1,6 +1,8 @@
 import random
+from collections import namedtuple
 
 import pyglet
+from pyglet.window import mouse, key
 
 
 COLORS = ['red', 'purple', 'green']
@@ -8,6 +10,8 @@ SHAPES = ['oval', 'squiggle', 'diamond']
 NUMBERS = ['one', 'two', 'three']
 SHADINGS = ['solid', 'striped', 'outlined']
 
+# coordinates [x, y, right: x + width, top: y + height] of image on viewport
+Box = namedtuple("Box", "x y right top")
 
 class Card(pyglet.sprite.Sprite):
     def __init__(self, img, card_color, card_shape, card_pattern, card_number):
@@ -18,9 +22,16 @@ class Card(pyglet.sprite.Sprite):
         self.number = card_number
         self.scale = 0.75
 
+        self.box = Box(5000, 5000, 100, 100)
     def set_position(self, x, y):
         self.x = x
         self.y = y
+        self.box = Box(self.x, self.y, self.x+self.width, self.y+self.height)
+
+    def is_in_the_box(self, x, y):
+        if self.box.x <= x <= self.box.right \
+                and self.box.y <= y <= self.box.top:
+            return True
 
     def __str__(self):
         return "Card: {}, {}, {}, {}".format(self.colour, self.shape, self.pattern, self.number)
@@ -84,6 +95,11 @@ class GameWindow(pyglet.window.Window):
             self.draw_selected(card.colour, card.shape, card.pattern, card.number, x+50, 150*i)
             self.cards_used.append(card)
 
+    def on_mouse_press(self, x, y, button, modifiers):
+        if button == mouse.LEFT:
+            for card in self.cards:
+                if card.is_in_the_box(x, y):
+                    print(card)
     def on_draw(self):
         self.clear()
         self.batch.draw()
