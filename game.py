@@ -13,7 +13,11 @@ SHADINGS = ['solid', 'striped', 'outlined']
 # coordinates [x, y, right: x + width, top: y + height] of image on viewport
 Box = namedtuple("Box", "x y right top")
 
+
 class Card(pyglet.sprite.Sprite):
+    """
+    Single Card sprite object
+    """
     def __init__(self, img, card_color, card_shape, card_pattern, card_number):
         super().__init__(img)
         self.colour = card_color
@@ -23,6 +27,7 @@ class Card(pyglet.sprite.Sprite):
         self.scale = 0.75
 
         self.box = Box(5000, 5000, 100, 100)
+
     def set_position(self, x, y):
         self.x = x
         self.y = y
@@ -62,6 +67,9 @@ def read_card_images():
 
 
 class GameWindow(pyglet.window.Window):
+    """
+    Game Director managing all actions
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.set_location(100, 100)
