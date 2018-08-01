@@ -1,3 +1,5 @@
+import random
+
 import pyglet
 
 
@@ -57,13 +59,31 @@ class GameWindow(pyglet.window.Window):
         self.batch = pyglet.graphics.Batch()
 
         self.cards = read_card_images()
-        self.draw_selected('red', 'oval', 'solid', 'one', 50, 50)
+        self.cards_used = []
+
+        # self.draw_selected('red', 'oval', 'solid', 'one', 50, 50)
+
+        self.draw_random(4)
+        self.draw_random(4, 250)
+        self.draw_random(4, 500)
+        self.draw_random(4, 750)
+
     def draw_selected(self, color, shape, pattern, number, x, y):
         for card in self.cards:
             if card.shape == shape and card.pattern == pattern \
                     and card.number == number and card.colour == color:
                 card.set_position(x, y)
                 card.batch = self.batch
+
+    def draw_random(self, count, x=0):
+        cards = [c for c in self.cards if c not in self.cards_used]
+        random.shuffle(cards)
+        for i, card in enumerate(cards):
+            if i >= count:
+                break
+            self.draw_selected(card.colour, card.shape, card.pattern, card.number, x+50, 150*i)
+            self.cards_used.append(card)
+
     def on_draw(self):
         self.clear()
         self.batch.draw()
