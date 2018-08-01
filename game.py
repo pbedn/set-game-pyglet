@@ -6,7 +6,7 @@ from pyglet.window import mouse, key
 
 
 COLORS = ['red', 'purple', 'green']
-SHAPES = ['oval', 'squiggle', 'diamond']
+SHAPES = ['oval', 'diamond', 'squiggle']
 NUMBERS = ['one', 'two', 'three']
 SHADINGS = ['solid', 'striped', 'outlined']
 
