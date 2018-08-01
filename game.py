@@ -111,7 +111,9 @@ class Cards:
 
         self.cards = select_features(read_card_images, feat_switch)
         self.check_cards_number(feat_switch)
+
         self.cards_used = []
+        self.card_clicked = []
 
         for i in range(self.cols):
             self.draw_random(i*250)
@@ -143,6 +145,22 @@ class Cards:
             self.draw_selected(card.colour, card.shape, card.pattern, card.number, x+50, 150*i)
             self.cards_used.append(card)
 
+    def check_if_clicked_are_set(self):
+        """
+        Conditions for correct set are described in README.
+
+        If set consists of one or three elements then it is correct
+        according to game rules, therefore it has to be different than 2
+        """
+        result = True
+        for attribute in FEATURES.keys():
+            set_a = {getattr(self.card_clicked[0], attribute),
+                     getattr(self.card_clicked[1], attribute),
+                     getattr(self.card_clicked[2], attribute)}
+            result = result and len(set_a) != 2
+        print(">>>>", result)
+        return result
+
 
 class GameWindow(pyglet.window.Window):
     """
@@ -151,7 +169,7 @@ class GameWindow(pyglet.window.Window):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.set_location(100, 100)
-        self.frame_rate = 1/60.0
+        self.frame_rate = 1
 
         self.batch = pyglet.graphics.Batch()
 
@@ -163,10 +181,12 @@ class GameWindow(pyglet.window.Window):
         self.score = Score('0', self.width-180, self.height-20, batch=self.batch)
 
     def on_mouse_press(self, x, y, button, modifiers):
+        # TODO: Use OOP design pattern here (OBSERVER ?)
         if button == mouse.LEFT:
             for card in self.cards:
                 if card.is_in_the_box(x, y):
                     card.scale = SCALE_CARD_SELECTED
+                    self.cards.card_clicked.append(card)
                     print(card)
 
     def on_key_press(self, symbol, modifiers):
@@ -178,7 +198,14 @@ class GameWindow(pyglet.window.Window):
         self.batch.draw()
 
     def update(self, dt):
-        pass
+        if len(self.cards.card_clicked) == 3:
+            if self.cards.check_if_clicked_are_set():
+                for c in self.cards.card_clicked:
+                    c.opacity = 150
+
+            for c in self.cards.card_clicked:
+                c.scale = SCALE_CARD_UNSELECTED
+            self.cards.card_clicked = []
 
 
 if __name__ == '__main__':
