@@ -9,6 +9,7 @@ COLORS = ['red', 'purple', 'green']
 SHAPES = ['oval', 'diamond', 'squiggle']
 NUMBERS = ['one', 'two', 'three']
 PATTERNS = ['solid', 'striped', 'outlined']
+FEATURES = {'color': COLORS, 'shape': SHAPES, 'number': NUMBERS, 'pattern': PATTERNS}
 
 # coordinates [x, y, right: x + width, top: y + height] of image on viewport
 Box = namedtuple("Box", "x y right top")
@@ -43,6 +44,26 @@ class Card(pyglet.sprite.Sprite):
 
     def __str__(self):
         return "Card: {}, {}, {}, {}".format(self.colour, self.shape, self.pattern, self.number)
+
+
+def select_features(func, switch):
+    cards = func()
+    new_cards = cards.copy()
+
+    def remove_cards(attribute, features, lst):
+        if not getattr(switch, attribute):
+            single_feat = random.choice(features)
+            for card in cards:
+                if getattr(card, attribute) != single_feat:
+                    try:
+                        lst.remove(card)
+                    except ValueError:
+                        pass
+
+    for k, v in FEATURES.items():
+        remove_cards(k, v, new_cards)
+
+    return new_cards
 
 
 def read_card_images():
@@ -83,16 +104,24 @@ class Score(pyglet.text.Label):
 
 
 class Cards:
-    def __init__(self, rows, cols, batch):
+    def __init__(self, rows, cols, feat_switch, batch):
         self.rows = rows
         self.cols = cols
         self.batch = batch
 
-        self.cards = read_card_images()
+        self.cards = select_features(read_card_images, feat_switch)
+        self.check_cards_number(feat_switch)
         self.cards_used = []
 
         for i in range(self.cols):
             self.draw_random(i*250)
+
+    def check_cards_number(self, feat_switch):
+        total = 81
+        for attribute in FEATURES.keys():
+            if not getattr(feat_switch, attribute):
+                total /= 3
+        assert len(self.cards) == total, "Number of cards after features removal is wrong"
 
     def __iter__(self):
         for card in self.cards:
@@ -127,7 +156,7 @@ class GameWindow(pyglet.window.Window):
         self.batch = pyglet.graphics.Batch()
 
         FeatSwitch = namedtuple("FeatSwitch", "pattern number shape color")
-        feat_switch = FeatSwitch(pattern=False, number=False, shape=False, color=True)
+        feat_switch = FeatSwitch(pattern=False, number=True, shape=True, color=True)
 
         self.cards = Cards(rows=4, cols=4, feat_switch=feat_switch, batch=self.batch)
 
