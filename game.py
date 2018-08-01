@@ -108,6 +108,11 @@ class GameWindow(pyglet.window.Window):
             for card in self.cards:
                 if card.is_in_the_box(x, y):
                     print(card)
+
+    def on_key_press(self, symbol, modifiers):
+        if symbol == key.ESCAPE:
+            pyglet.app.exit()
+
     def on_draw(self):
         self.clear()
         self.batch.draw()
