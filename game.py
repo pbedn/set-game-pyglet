@@ -1,4 +1,5 @@
 import random
+from itertools import combinations
 from collections import namedtuple
 
 import pyglet
@@ -183,8 +184,8 @@ class Cards:
         self.draw_selected(card.color_name, card.shape, card.pattern, card.number, x, y)
         self.cards_used.append(card)
 
-
-    def check_if_clicked_are_set(self):
+    @staticmethod
+    def check_if_cards_are_set(cards_list):
         """
         Conditions for correct set are described in README.
 
@@ -193,11 +194,17 @@ class Cards:
         """
         result = True
         for attribute in FEATURES.keys():
-            set_a = {getattr(self.card_clicked[0], attribute),
-                     getattr(self.card_clicked[1], attribute),
-                     getattr(self.card_clicked[2], attribute)}
+            set_a = {getattr(cards_list[0], attribute),
+                     getattr(cards_list[1], attribute),
+                     getattr(cards_list[2], attribute)}
             result = result and len(set_a) != 2
         return result
+
+    def check_if_set_exists_in_cards_used(self):
+        result = []
+        for c in combinations(self.cards_used, 3):
+            result.append(self.check_if_cards_are_set(c))
+        return True if True in result else False
 
     def number_of_cards_left(self):
         num = len(self.cards) - len(self.cards_used)
@@ -249,7 +256,7 @@ class GameWindow(pyglet.window.Window):
 
     def update(self, dt):
         if len(self.cards.card_clicked) == 3:
-            if self.cards.check_if_clicked_are_set():
+            if self.cards.check_if_cards_are_set(self.cards.card_clicked):
                 print(">>>> Found a set!")
                 self.score.count += 1
                 for c in self.cards.card_clicked:
@@ -265,6 +272,12 @@ class GameWindow(pyglet.window.Window):
 
             self.cards_number_display.count = self.cards.number_of_cards_left()
 
+            if not self.cards.check_if_set_exists_in_cards_used():
+                # TODO: display menu after win
+                print("END GAME")
+                import time
+                time.sleep(2)
+                pyglet.app.exit()
 
 if __name__ == '__main__':
     window = GameWindow(width=1024, height=600, caption="Sets", resizable=False)
