@@ -29,6 +29,7 @@ class Card(pyglet.sprite.Sprite):
         self.pattern = card_pattern
         self.number = card_number
         self.scale = SCALE_CARD_UNSELECTED
+        self.scale_x = 0.9
 
         self.box = Box(5000, 5000, 100, 100)
 
@@ -70,9 +71,9 @@ def read_card_images():
     red_deck = pyglet.image.load('res/sets-red.png')
     green_deck = pyglet.image.load('res/sets-green.png')
     purple_deck = pyglet.image.load('res/sets-purple.png')
-    red_deck_seq = pyglet.image.ImageGrid(red_deck, 9, 3)
-    green_deck_seq = pyglet.image.ImageGrid(green_deck, 9, 3)
-    purple_deck_seq = pyglet.image.ImageGrid(purple_deck, 9, 3)
+    red_deck_seq = pyglet.image.ImageGrid(red_deck, 9, 3, row_padding=2)
+    green_deck_seq = pyglet.image.ImageGrid(green_deck, 9, 3, row_padding=2)
+    purple_deck_seq = pyglet.image.ImageGrid(purple_deck, 9, 3, row_padding=2)
 
     seq = {'red': red_deck_seq, 'green': green_deck_seq, 'purple': purple_deck_seq}
 
@@ -123,7 +124,7 @@ class Cards:
         self.card_clicked = []
 
         for i in range(self.cols):
-            self.draw_random(i*250)
+            self.draw_random(i*200)
 
     def check_cards_number(self, feat_switch):
         total = 81
@@ -149,7 +150,7 @@ class Cards:
         for i, card in enumerate(cards):
             if i >= self.rows:
                 break
-            self.draw_selected(card.color_name, card.shape, card.pattern, card.number, x+50, 150*i)
+            self.draw_selected(card.color_name, card.shape, card.pattern, card.number, x+25, 150*i+100)
             self.cards_used.append(card)
 
     def check_if_clicked_are_set(self):
@@ -174,7 +175,7 @@ class GameWindow(pyglet.window.Window):
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.set_location(100, 100)
+        self.set_location(50, 50)
         self.frame_rate = 1
 
         self.batch = pyglet.graphics.Batch()
@@ -182,7 +183,7 @@ class GameWindow(pyglet.window.Window):
         FeatSwitch = namedtuple("FeatSwitch", "pattern number shape color_name")
         feat_switch = FeatSwitch(pattern=False, number=True, shape=True, color_name=True)
 
-        self.cards = Cards(rows=4, cols=4, feat_switch=feat_switch, batch=self.batch)
+        self.cards = Cards(rows=3, cols=4, feat_switch=feat_switch, batch=self.batch)
 
         self.score = Score(self.width-180, self.height-20, batch=self.batch)
         self.score.count = 0
