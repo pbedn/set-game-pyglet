@@ -192,10 +192,14 @@ class GameWindow(pyglet.window.Window):
         # TODO: Use OOP design pattern here (OBSERVER ?)
         if button == mouse.LEFT:
             for card in self.cards.cards_used:
-                if card.is_in_the_box(x, y) and card not in self.cards.card_clicked:
-                    card.scale = SCALE_CARD_SELECTED
-                    self.cards.card_clicked.append(card)
-                    print(card)
+                if card.is_in_the_box(x, y):
+                    if card not in self.cards.card_clicked:
+                        card.scale = SCALE_CARD_SELECTED
+                        self.cards.card_clicked.append(card)
+                        print(card)
+                    else:
+                        card.scale = SCALE_CARD_UNSELECTED
+                        self.cards.card_clicked.remove(card)
 
     def on_key_press(self, symbol, modifiers):
         if symbol == key.ESCAPE:
