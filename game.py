@@ -267,6 +267,9 @@ class GameWindow(pyglet.window.Window):
                     c.delete()
                     if self.cards.number_of_cards_left() > 0:
                         self.cards.draw_single_random(old_x, old_y)
+            else:
+                for c in self.cards.card_clicked:
+                    c.scale = SCALE_CARD_UNSELECTED
 
             self.cards.card_clicked = []
 
