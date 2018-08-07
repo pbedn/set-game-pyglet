@@ -12,7 +12,7 @@ NUMBERS = ['one', 'two', 'three']
 PATTERNS = ['solid', 'striped', 'outlined']
 FEATURES = {'color_name': COLORS, 'shape': SHAPES, 'number': NUMBERS, 'pattern': PATTERNS}
 
-# coordinates [x, y, right: x + width, top: y + height] of image on viewport
+# coordinates [x, y, right: x + width, top: y + height] of card image on viewport
 Box = namedtuple("Box", "x y right top")
 
 SCALE_CARD_SELECTED = 0.80
@@ -32,14 +32,28 @@ class Card(pyglet.sprite.Sprite):
         self.scale = SCALE_CARD_UNSELECTED
         self.scale_x = 0.9
 
+        # Coordinates of box at init are out of real window
         self.box = Box(5000, 5000, 100, 100)
 
     def set_position(self, x, y):
+        """
+        Set position of sprite in window and create box variable
+
+        :param x:
+        :param y:
+        """
         self.x = x
         self.y = y
         self.box = Box(self.x, self.y, self.x+self.width, self.y+self.height)
 
     def is_in_the_box(self, x, y):
+        """
+        Check if point (x,y) is inside card box (rectangle)
+
+        :param x:
+        :param y:
+        :return: True if point (x,y) is inside box
+        """
         if self.box.x <= x <= self.box.right \
                 and self.box.y <= y <= self.box.top:
             return True
@@ -49,6 +63,13 @@ class Card(pyglet.sprite.Sprite):
 
 
 def select_features(func, switch):
+    """
+    Remove selected feature from total cards list
+
+    :param func: function reading images from resources
+    :param switch: namedtuple with boolean features
+    :return: List of cards after removal selected feature
+    """
     cards = func()
     new_cards = cards.copy()
 
@@ -69,6 +90,11 @@ def select_features(func, switch):
 
 
 def read_card_images():
+    """
+    Read images from disk into sequence and grid into one list
+
+    :return: List containing all cards read from image resources
+    """
     red_deck = pyglet.image.load('res/sets-red.png')
     green_deck = pyglet.image.load('res/sets-green.png')
     purple_deck = pyglet.image.load('res/sets-purple.png')
@@ -90,6 +116,9 @@ def read_card_images():
 
 
 class Text(pyglet.text.Label):
+    """
+    Display text on the screen
+    """
     def __init__(self, x, y, _text, batch, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.font_name = 'Arial'
@@ -114,13 +143,18 @@ class Text(pyglet.text.Label):
 
 
 class Cards:
+    """
+    Manager of all cards that are displayed on the screen
+
+    and generated but hidden for the user
+    """
     def __init__(self, rows, cols, feat_switch, batch):
         self.rows = rows
         self.cols = cols
         self.batch = batch
 
         self.cards = select_features(read_card_images, feat_switch)
-        self.check_cards_number(feat_switch)
+        self._check_cards_number(feat_switch)
 
         self.cards_used = []
         self.card_clicked = []
@@ -128,7 +162,14 @@ class Cards:
         for i in range(self.cols):
             self.draw_random(i*200)
 
-    def check_cards_number(self, feat_switch):
+    def _check_cards_number(self, feat_switch):
+        """
+        Assert that number of cards after feature removal is correct
+        All four features should have 81 cards
+        Quickstart game (one feature off) - 27 cards
+
+        :param feat_switch:
+        """
         total = 81
         for attribute in FEATURES.keys():
             if not getattr(feat_switch, attribute):
@@ -140,6 +181,16 @@ class Cards:
             yield card
 
     def draw_selected(self, color, shape, pattern, number, x, y):
+        """
+        Set attributes and add to batch a selected card
+
+        :param color:
+        :param shape:
+        :param pattern:
+        :param number:
+        :param x:
+        :param y:
+        """
         for card in self.cards:
             if card.shape == shape and card.pattern == pattern \
                     and card.number == number and card.color_name == color:
@@ -147,6 +198,11 @@ class Cards:
                 card.batch = self.batch
 
     def draw_random(self, x):
+        """
+        Draw one column of random cards
+
+        :param x: position offset of first drawn card
+        """
         cards = [c for c in self.cards if c not in self.cards_used]
         random.shuffle(cards)
         for i, card in enumerate(cards):
@@ -156,6 +212,12 @@ class Cards:
             self.cards_used.append(card)
 
     def draw_single_random(self, x, y):
+        """
+        Draw single random card at given coordinates
+
+        :param x:
+        :param y:
+        """
         cards = [c for c in self.cards if c not in self.cards_used]
         random.shuffle(cards)
         card = cards[0]
@@ -165,11 +227,14 @@ class Cards:
     @staticmethod
     def check_if_cards_are_set(cards_list):
         """
-        Conditions for correct set are described in README.
-
+        Detailed conditions for correct set are described in README.
         If set consists of one or three elements then it is correct
         according to game rules, therefore it has to be different than 2
+
+        :param cards_list:
+        :return: True if cards in a list are set, False otherwise
         """
+        assert len(cards_list) == 3
         result = True
         for attribute in FEATURES.keys():
             set_a = {getattr(cards_list[0], attribute),
@@ -179,12 +244,23 @@ class Cards:
         return result
 
     def check_if_set_exists_in_cards_used(self):
+        """
+        Iterate through all cards drawn on screen
+        make combinations of three cards from them
+        And check if they are a set
+
+        :return: True if set exists among cards, False otherwise
+        """
         result = []
         for c in combinations(self.cards_used, 3):
             result.append(self.check_if_cards_are_set(c))
         return True if True in result else False
 
     def number_of_cards_left(self):
+        """
+        Number of cards that are not draw on the screen
+        :return: number o cards left if it is greater than zero, and zero otherwise
+        """
         num = len(self.cards) - len(self.cards_used)
         return num if num >= 0 else 0
 
@@ -195,11 +271,16 @@ class GameWindow(pyglet.window.Window):
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # location of upper left corner
         self.set_location(50, 50)
+        # frame rate is set to 1 as the game not need more updates
         self.frame_rate = 1
-
+        # main batch for all objects
         self.batch = pyglet.graphics.Batch()
 
+        # allow to choose set feature
+        # for quickstart game (for beginners) make one feature False - 27 cards in game
+        # for normal game leave all as True - 81 cards in game
         FeatSwitch = namedtuple("FeatSwitch", "pattern number shape color_name")
         feat_switch = FeatSwitch(pattern=False, number=True, shape=True, color_name=True)
 
@@ -212,9 +293,11 @@ class GameWindow(pyglet.window.Window):
         self.cards_number_display.count = self.cards.number_of_cards_left()
 
     def on_mouse_press(self, x, y, button, modifiers):
+        # When player clicks mouse left button and clicked point (x,y) is inside card box
         if button == mouse.LEFT:
             for card in self.cards.cards_used:
                 if card.is_in_the_box(x, y):
+                    # that card is scaled up and added into clicked list if it was not there before
                     if card not in self.cards.card_clicked:
                         card.scale = SCALE_CARD_SELECTED
                         self.cards.card_clicked.append(card)
@@ -226,6 +309,10 @@ class GameWindow(pyglet.window.Window):
     def on_key_press(self, symbol, modifiers):
         if symbol == key.ESCAPE:
             pyglet.app.exit()
+        if symbol == key.H:
+            print("hint")
+        if symbol == key.N:
+            print("new row")
 
     def on_draw(self):
         self.clear()
@@ -238,27 +325,33 @@ class GameWindow(pyglet.window.Window):
                 self.score.count += 1
                 for c in self.cards.card_clicked:
                     # Add three new cards and remove old ones
-
                     old_x, old_y = c.x, c.y
+                    # remove card from both total cards list and used (drawn on screen)
                     self.cards.cards_used.remove(c)
                     self.cards.cards.remove(c)
+                    # remove card sprite from batch
                     c.delete()
+                    # if there are cards left in total cards list, draw one of them
+                    # take note that this loop will execute always three times (three cards drawn)
                     if self.cards.number_of_cards_left() > 0:
                         self.cards.draw_single_random(old_x, old_y)
             else:
+                # if cards are not a set, unselect them
                 for c in self.cards.card_clicked:
                     c.scale = SCALE_CARD_UNSELECTED
 
             self.cards.card_clicked = []
-
+            # display number of cards left on top of window
             self.cards_number_display.count = self.cards.number_of_cards_left()
 
+            # this is end of game when thare are no left sets visible
             if not self.cards.check_if_set_exists_in_cards_used():
                 # TODO: display menu after win
                 print("END GAME")
                 import time
                 time.sleep(2)
                 pyglet.app.exit()
+
 
 if __name__ == '__main__':
     window = GameWindow(width=1024, height=600, caption="Sets", resizable=False)
