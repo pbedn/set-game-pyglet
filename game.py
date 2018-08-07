@@ -199,6 +199,10 @@ class Cards:
             result = result and len(set_a) != 2
         return result
 
+    def number_of_cards_left(self):
+        num = len(self.cards) - len(self.cards_used)
+        return num if num >= 0 else 0
+
 
 class GameWindow(pyglet.window.Window):
     """
@@ -249,10 +253,14 @@ class GameWindow(pyglet.window.Window):
                 print(">>>> Found a set!")
                 self.score.count += 1
                 for c in self.cards.card_clicked:
-                    c.opacity = 150
+                    # Add three new cards and remove old ones
+                    old_x, old_y = c.x, c.y
+                    self.cards.cards_used.remove(c)
+                    self.cards.cards.remove(c)
+                    c.delete()
+                    if self.cards.number_of_cards_left() > 0:
+                        self.cards.draw_single_random(old_x, old_y)
 
-            for c in self.cards.card_clicked:
-                c.scale = SCALE_CARD_UNSELECTED
             self.cards.card_clicked = []
 
             self.cards_number_display.count = self.cards.number_of_cards_left()
