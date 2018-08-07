@@ -111,6 +111,29 @@ class Score(pyglet.text.Label):
         self.text = "Sets found: " + str(self._count)
 
 
+class CardsNumberDisplay(pyglet.text.Label):
+    def __init__(self, x, y, batch, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.font_name = 'Arial'
+        self.font_size = 30
+        self.anchor_x = 'center'
+        self.anchor_y = 'center'
+        self.batch = batch
+        self._count = 0
+        self.text = ""
+        self.x = x
+        self.y = y
+
+    @property
+    def count(self):
+        return self._count
+
+    @count.setter
+    def count(self, value):
+        self._count = value
+        self.text = "Cards left: " + str(self._count)
+
+
 class Cards:
     def __init__(self, rows, cols, feat_switch, batch):
         self.rows = rows
@@ -188,6 +211,9 @@ class GameWindow(pyglet.window.Window):
         self.score = Score(self.width-180, self.height-20, batch=self.batch)
         self.score.count = 0
 
+        self.cards_number_display = CardsNumberDisplay(self.width - 450, self.height - 20, batch=self.batch)
+        self.cards_number_display.count = self.cards.number_of_cards_left()
+
     def on_mouse_press(self, x, y, button, modifiers):
         # TODO: Use OOP design pattern here (OBSERVER ?)
         if button == mouse.LEFT:
@@ -220,6 +246,8 @@ class GameWindow(pyglet.window.Window):
             for c in self.cards.card_clicked:
                 c.scale = SCALE_CARD_UNSELECTED
             self.cards.card_clicked = []
+
+            self.cards_number_display.count = self.cards.number_of_cards_left()
 
 
 if __name__ == '__main__':
