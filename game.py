@@ -14,8 +14,8 @@ FEATURES = {'color_name': COLORS, 'shape': SHAPES, 'number': NUMBERS, 'pattern':
 # coordinates [x, y, right: x + width, top: y + height] of image on viewport
 Box = namedtuple("Box", "x y right top")
 
-SCALE_CARD_SELECTED = 0.85
-SCALE_CARD_UNSELECTED = 0.75
+SCALE_CARD_SELECTED = 0.80
+SCALE_CARD_UNSELECTED = 0.70
 
 
 class Card(pyglet.sprite.Sprite):
