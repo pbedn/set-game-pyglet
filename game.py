@@ -191,7 +191,7 @@ class GameWindow(pyglet.window.Window):
     def on_mouse_press(self, x, y, button, modifiers):
         # TODO: Use OOP design pattern here (OBSERVER ?)
         if button == mouse.LEFT:
-            for card in self.cards:
+            for card in self.cards.cards_used:
                 if card.is_in_the_box(x, y):
                     card.scale = SCALE_CARD_SELECTED
                     self.cards.card_clicked.append(card)
