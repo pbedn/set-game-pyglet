@@ -89,13 +89,14 @@ def read_card_images():
     return card_list
 
 
-class Score(pyglet.text.Label):
-    def __init__(self, x, y, batch, *args, **kwargs):
+class Text(pyglet.text.Label):
+    def __init__(self, x, y, _text, batch, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.font_name = 'Arial'
         self.font_size = 30
         self.anchor_x = 'center'
         self.anchor_y = 'center'
+        self._text = _text
         self.batch = batch
         self._count = 0
         self.text = ""
@@ -109,30 +110,7 @@ class Score(pyglet.text.Label):
     @count.setter
     def count(self, value):
         self._count = value
-        self.text = "Sets found: " + str(self._count)
-
-
-class CardsNumberDisplay(pyglet.text.Label):
-    def __init__(self, x, y, batch, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.font_name = 'Arial'
-        self.font_size = 30
-        self.anchor_x = 'center'
-        self.anchor_y = 'center'
-        self.batch = batch
-        self._count = 0
-        self.text = ""
-        self.x = x
-        self.y = y
-
-    @property
-    def count(self):
-        return self._count
-
-    @count.setter
-    def count(self, value):
-        self._count = value
-        self.text = "Cards left: " + str(self._count)
+        self.text = self._text + str(self._count)
 
 
 class Cards:
@@ -227,10 +205,10 @@ class GameWindow(pyglet.window.Window):
 
         self.cards = Cards(rows=3, cols=4, feat_switch=feat_switch, batch=self.batch)
 
-        self.score = Score(self.width-180, self.height-20, batch=self.batch)
+        self.score = Text(self.width-180, self.height-20, "Sets found: ", batch=self.batch)
         self.score.count = 0
 
-        self.cards_number_display = CardsNumberDisplay(self.width - 450, self.height - 20, batch=self.batch)
+        self.cards_number_display = Text(self.width - 450, self.height - 20, "Cards left: ", batch=self.batch)
         self.cards_number_display.count = self.cards.number_of_cards_left()
 
     def on_mouse_press(self, x, y, button, modifiers):
