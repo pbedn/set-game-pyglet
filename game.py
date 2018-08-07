@@ -234,7 +234,6 @@ class GameWindow(pyglet.window.Window):
         self.cards_number_display.count = self.cards.number_of_cards_left()
 
     def on_mouse_press(self, x, y, button, modifiers):
-        # TODO: Use OOP design pattern here (OBSERVER ?)
         if button == mouse.LEFT:
             for card in self.cards.cards_used:
                 if card.is_in_the_box(x, y):
@@ -261,6 +260,7 @@ class GameWindow(pyglet.window.Window):
                 self.score.count += 1
                 for c in self.cards.card_clicked:
                     # Add three new cards and remove old ones
+
                     old_x, old_y = c.x, c.y
                     self.cards.cards_used.remove(c)
                     self.cards.cards.remove(c)

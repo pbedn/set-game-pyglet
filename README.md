@@ -27,15 +27,14 @@ Scoring: +1 point to set found, -1 for wrong set clicked.
 
 **TODO**
 
-* [ ] Display number of cards left in unused deck 
-* [ ] Replace old cards with fresh from unused deck when user finds correct set (key N)
+* [x] Display number of cards left in unused deck 
+* [x] Replace old cards with fresh from unused deck when user finds correct set
 * [ ] Display menu in the beginning with features choice option (quickstart and complete option)
 * [ ] Add penalty for clicking wrong cards that will decrease score
 * [ ] Display end game screen
 * [ ] Add hints
     * Show how many sets are visible
     * Add button to automatically click random card from correct set 
-* [ ] Refactor to apply design patterns
 
 
 ---
