@@ -176,6 +176,14 @@ class Cards:
             self.draw_selected(card.color_name, card.shape, card.pattern, card.number, x+25, 150*i+100)
             self.cards_used.append(card)
 
+    def draw_single_random(self, x, y):
+        cards = [c for c in self.cards if c not in self.cards_used]
+        random.shuffle(cards)
+        card = cards[0]
+        self.draw_selected(card.color_name, card.shape, card.pattern, card.number, x, y)
+        self.cards_used.append(card)
+
+
     def check_if_clicked_are_set(self):
         """
         Conditions for correct set are described in README.
