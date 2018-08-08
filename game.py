@@ -23,6 +23,7 @@ MENU_TEXT_FEATURES_NORMAL = "Normal: 4 features"
 FEATURES_QUICKSTART = 'quickstart'
 FEATURES_NORMAL = 'normal'
 
+
 class Card(pyglet.sprite.Sprite):
     """
     Single Card sprite object
@@ -274,36 +275,23 @@ class Cards:
         return num if num >= 0 else 0
 
 
-class GameWindow(pyglet.window.Window):
-    """
-    Game Director managing all actions
-    """
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # location of upper left corner
-        self.set_location(50, 50)
-        # frame rate is set to 1 as the game not need more updates
-        self.frame_rate = 1
-        # main batch for all objects
-        self.batch = pyglet.graphics.Batch()
-
-        # start game with menu
-        self.state = 'MENU'
-        self.menu_init()
+class Menu:
+    def __init__(self, director):
+        self.director = director
 
     def menu_init(self):
-        start_game_menu_item = TextBase(self.width // 2, self.height // 2 + 100, "Start Game", batch=self.batch)
+        start_game_menu_item = TextBase(self.director.width // 2, self.director.height // 2 + 100, "Start Game", batch=self.director.batch)
         start_game_menu_item.bold = True
         start_game_menu_item.font_size += 10
-        features_menu_item = TextBase(self.width // 2, self.height // 2, MENU_TEXT_FEATURES_QUICKSTART, batch=self.batch)
-        end_game_menu_item = TextBase(self.width // 2, self.height // 2 - 100, "Exit", batch=self.batch)
+        features_menu_item = TextBase(self.director.width // 2, self.director.height // 2, MENU_TEXT_FEATURES_QUICKSTART, batch=self.director.batch)
+        end_game_menu_item = TextBase(self.director.width // 2, self.director.height // 2 - 100, "Exit", batch=self.director.batch)
         self.menu_items = [start_game_menu_item, features_menu_item, end_game_menu_item]
         self.current_index = 0
         self.current_selection = self.menu_items[0]
         self.set_feature = FEATURES_QUICKSTART  # used to save number of features user (3 or 4) for cards init
 
         help = "Select features with keyboard left or right"
-        help_menu_item = TextBase(self.width // 2, self.height // 8, help, batch=self.batch)
+        help_menu_item = TextBase(self.director.width // 2, self.director.height // 8, help, batch=self.director.batch)
         help_menu_item.font_size -= 15
         self.menu_items.append(help_menu_item)
 
@@ -334,14 +322,33 @@ class GameWindow(pyglet.window.Window):
             self.current_selection.text = MENU_TEXT_FEATURES_QUICKSTART
         elif symbol == key.ENTER:
             if self.current_index == 0:
-                self.game_init()  # start the game
-                self.state = 'GAME'
+                self.director.game_init()  # start the game
+                self.director.state = 'GAME'
                 for item in self.menu_items:  # clean menu text
                     item.delete()
             elif self.current_index == 1:
                 pass
             elif self.current_index == 2:
                 pyglet.app.exit()
+
+
+class GameWindow(pyglet.window.Window):
+    """
+    Game Director managing all actions
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # location of upper left corner
+        self.set_location(50, 50)
+        # frame rate is set to 1 as the game not need more updates
+        self.frame_rate = 1
+        # main batch for all objects
+        self.batch = pyglet.graphics.Batch()
+
+        # start game with menu
+        self.state = 'MENU'
+        self.menu = Menu(self)
+        self.menu.menu_init()
 
     def game_init(self):
         # allow to choose set feature
@@ -351,7 +358,7 @@ class GameWindow(pyglet.window.Window):
 
         # random select features for the game after user menu choice
         features = 4 * [True]
-        if self.set_feature == FEATURES_QUICKSTART:
+        if self.menu.set_feature == FEATURES_QUICKSTART:
             features[random.randint(0, 3)] = False
         feat_switch = FeatSwitch(*features)
 
@@ -415,7 +422,7 @@ class GameWindow(pyglet.window.Window):
         if symbol == key.ESCAPE:
             pyglet.app.exit()
         if self.state == "MENU":
-            self.choose_menu_item(symbol)
+            self.menu.choose_menu_item(symbol)
 
     def on_draw(self):
         self.clear()
