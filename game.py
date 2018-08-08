@@ -362,12 +362,18 @@ class GameWindow(pyglet.window.Window):
         # main batch for all objects
         self.batch = pyglet.graphics.Batch()
 
+        # one time use variable to control loading of images
+        self.preload = True
+
         # start game with menu
         self.state = 'MENU'
         self.menu = Menu(self)
         self.menu.menu_init()
 
     def game_init(self):
+        # Test if all cards are correctly preloaded
+        assert len(self._cards) == 81, "Cards Preload Test"
+
         # allow to choose set feature
         # for quickstart game (for beginners) make one feature False - 27 cards in game
         # for normal game leave all as True - 81 cards in game
@@ -470,6 +476,11 @@ class GameWindow(pyglet.window.Window):
         self.batch.draw()
 
     def update(self, dt):
+        if self.state == 'MENU' and self.preload:
+            # card images loading during menu display
+            seq = read_images_from_disk()
+            self._cards = create_card_sprites(seq)  # TODO: Why is it so long?
+            self.preload = False
         if self.state == 'GAME':
             self.game()
         elif self.state == 'END':
