@@ -5,6 +5,7 @@ from collections import namedtuple
 import pyglet
 from pyglet.window import mouse, key
 
+DEBUG = False
 
 COLORS = ['red', 'purple', 'green']
 SHAPES = ['oval', 'diamond', 'squiggle']
@@ -383,7 +384,7 @@ class GameWindow(pyglet.window.Window):
     def game(self):
         if len(self.cards.card_clicked) == 3:
             if self.cards.check_if_cards_are_set(self.cards.card_clicked):
-                print(">>>> Found a set!")
+                if DEBUG: print(">>>> Found a set!")
                 self.score.count += 3
                 for c in self.cards.card_clicked:
                     # Add three new cards and remove old ones
@@ -443,7 +444,7 @@ class GameWindow(pyglet.window.Window):
                     if card not in self.cards.card_clicked:
                         card.scale = SCALE_CARD_SELECTED
                         self.cards.card_clicked.append(card)
-                        print(card)
+                        if DEBUG: print(card)
                     else:
                         card.scale = SCALE_CARD_UNSELECTED
                         self.cards.card_clicked.remove(card)
