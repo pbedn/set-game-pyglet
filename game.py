@@ -384,7 +384,7 @@ class GameWindow(pyglet.window.Window):
         if len(self.cards.card_clicked) == 3:
             if self.cards.check_if_cards_are_set(self.cards.card_clicked):
                 print(">>>> Found a set!")
-                self.score.count += 1
+                self.score.count += 3
                 for c in self.cards.card_clicked:
                     # Add three new cards and remove old ones
                     old_x, old_y = c.x, c.y
@@ -398,7 +398,8 @@ class GameWindow(pyglet.window.Window):
                     if self.cards.number_of_cards_left() > 0:
                         self.cards.draw_single_random(old_x, old_y)
             else:
-                # if cards are not a set, unselect them
+                # if cards are not a set, unselect them, and decrease score
+                self.score.count = self.score.count - 1 if self.score.count > 0 else 0
                 for c in self.cards.card_clicked:
                     c.scale = SCALE_CARD_UNSELECTED
 
