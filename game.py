@@ -290,9 +290,19 @@ class Menu:
         self.current_selection = self.menu_items[0]
         self.set_feature = FEATURES_QUICKSTART  # used to save number of features user (3 or 4) for cards init
 
-        help = "Select features with keyboard left or right"
-        help_menu_item = TextBase(self.director.width // 2, self.director.height // 8, help, batch=self.director.batch)
-        help_menu_item.font_size -= 15
+        help = """
+        Menu: Quickstart or Normal
+        R - Restart during gameplay with previous settings
+        F10 - Go to menu
+        ESCAPE - Exit app
+        """
+        help_menu_item = TextBase(self.director.width // 2,
+                                  self.director.height // 8,
+                                  help,
+                                  batch=self.director.batch,
+                                  multiline=True,
+                                  width=self.director.width)
+        help_menu_item.font_size -= 18
         self.menu_items.append(help_menu_item)
 
     def choose_menu_item(self, symbol):
