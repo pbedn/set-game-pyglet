@@ -18,6 +18,9 @@ Box = namedtuple("Box", "x y right top")
 SCALE_CARD_SELECTED = 0.80
 SCALE_CARD_UNSELECTED = 0.70
 
+MENU_TEXT_FEATURES_QUICKSTART = "Quickstart: 3 features"
+MENU_TEXT_FEATURES_NORMAL = "Normal: 4 features"
+
 
 class Card(pyglet.sprite.Sprite):
     """
@@ -282,9 +285,63 @@ class GameWindow(pyglet.window.Window):
         self.frame_rate = 1
         # main batch for all objects
         self.batch = pyglet.graphics.Batch()
+
         # start game with menu
         self.state = 'MENU'
+        self.menu_init()
 
+    def menu_init(self):
+        start_game_menu_item = TextBase(self.width // 2, self.height // 2 + 100, "Start Game", batch=self.batch)
+        start_game_menu_item.bold = True
+        start_game_menu_item.font_size += 10
+        features_menu_item = TextBase(self.width // 2, self.height // 2, MENU_TEXT_FEATURES_QUICKSTART, batch=self.batch)
+        end_game_menu_item = TextBase(self.width // 2, self.height // 2 - 100, "Exit", batch=self.batch)
+        self.menu_items = [start_game_menu_item, features_menu_item, end_game_menu_item]
+        self.current_index = 0
+        self.current_selection = self.menu_items[0]
+
+        help = "Select features with keyboard left or right"
+        help_menu_item = TextBase(self.width // 2, self.height // 8, help, batch=self.batch)
+        help_menu_item.font_size -= 15
+        self.menu_items.append(help_menu_item)
+
+    def choose_menu_item(self, symbol):
+        if symbol == key.DOWN:
+            self.current_selection.bold = False
+            self.current_selection.font_size -= 10
+            self.current_index += 1
+            if self.current_index > 2:
+                self.current_index = 0
+            self.current_selection = self.menu_items[self.current_index]
+            self.current_selection.bold = True
+            self.current_selection.font_size += 10
+        elif symbol == key.UP:
+            self.current_selection.bold = False
+            self.current_selection.font_size -= 10
+            self.current_index -= 1
+            if self.current_index < 0:
+                self.current_index = 2
+            self.current_selection = self.menu_items[self.current_index]
+            self.current_selection.bold = True
+            self.current_selection.font_size += 10
+        elif self.current_index == 1 and symbol == key.RIGHT:
+            self.set_feature = 'normal'
+            self.current_selection.text = MENU_TEXT_FEATURES_NORMAL
+        elif self.current_index == 1 and symbol == key.LEFT:
+            self.set_feature = 'quickstart'
+            self.current_selection.text = MENU_TEXT_FEATURES_QUICKSTART
+        elif symbol == key.ENTER:
+            if self.current_index == 0:
+                self.game_init()  # start the game
+                self.state = 'GAME'
+                for item in self.menu_items:  # clean menu text
+                    item.delete()
+            elif self.current_index == 1:
+                pass
+            elif self.current_index == 2:
+                pyglet.app.exit()
+
+    def game_init(self):
         # allow to choose set feature
         # for quickstart game (for beginners) make one feature False - 27 cards in game
         # for normal game leave all as True - 81 cards in game
@@ -335,7 +392,7 @@ class GameWindow(pyglet.window.Window):
 
     def on_mouse_press(self, x, y, button, modifiers):
         # When player clicks mouse left button and clicked point (x,y) is inside card box
-        if button == mouse.LEFT:
+        if button == mouse.LEFT and self.state == 'GAME':
             for card in self.cards.cards_used:
                 if card.is_in_the_box(x, y):
                     # that card is scaled up and added into clicked list if it was not there before
@@ -349,11 +406,9 @@ class GameWindow(pyglet.window.Window):
 
     def on_key_press(self, symbol, modifiers):
         if symbol == key.ESCAPE:
-            self.state = 'MENU'
-        if symbol == key.H:
-            print("hint")
-        if symbol == key.N:
-            print("new row")
+            pyglet.app.exit()
+        if self.state == "MENU":
+            self.choose_menu_item(symbol)
 
     def on_draw(self):
         self.clear()
