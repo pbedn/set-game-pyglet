@@ -115,22 +115,27 @@ def read_card_images():
     return card_list
 
 
-class Text(pyglet.text.Label):
+class TextBase(pyglet.text.Label):
     """
     Display text on the screen
     """
-    def __init__(self, x, y, _text, batch, *args, **kwargs):
+    def __init__(self, x, y, text, batch, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.font_name = 'Arial'
         self.font_size = 30
         self.anchor_x = 'center'
         self.anchor_y = 'center'
-        self._text = _text
         self.batch = batch
-        self._count = 0
-        self.text = ""
+        self.text = text
         self.x = x
         self.y = y
+
+
+class TextCountable(TextBase):
+    def __init__(self, x, y, _text, batch, *args, **kwargs):
+        super().__init__(x, y, _text, batch, *args, **kwargs)
+        self._text = _text
+        self._count = 0
 
     @property
     def count(self):
@@ -288,10 +293,10 @@ class GameWindow(pyglet.window.Window):
 
         self.cards = Cards(rows=3, cols=4, feat_switch=feat_switch, batch=self.batch)
 
-        self.score = Text(self.width-180, self.height-20, "Sets found: ", batch=self.batch)
+        self.score = TextCountable(self.width-180, self.height-20, "Sets found: ", batch=self.batch)
         self.score.count = 0
 
-        self.cards_number_display = Text(self.width - 450, self.height - 20, "Cards left: ", batch=self.batch)
+        self.cards_number_display = TextCountable(self.width - 450, self.height - 20, "Cards left: ", batch=self.batch)
         self.cards_number_display.count = self.cards.number_of_cards_left()
 
     def game(self):
@@ -325,6 +330,7 @@ class GameWindow(pyglet.window.Window):
                 self.state = 'END'
 
     def end(self):
+        TextBase(self.width // 2, self.height // 2, "End Game", batch=self.batch)
         print("END GAME")
 
     def on_mouse_press(self, x, y, button, modifiers):
