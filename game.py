@@ -20,7 +20,8 @@ SCALE_CARD_UNSELECTED = 0.70
 
 MENU_TEXT_FEATURES_QUICKSTART = "Quickstart: 3 features"
 MENU_TEXT_FEATURES_NORMAL = "Normal: 4 features"
-
+FEATURES_QUICKSTART = 'quickstart'
+FEATURES_NORMAL = 'normal'
 
 class Card(pyglet.sprite.Sprite):
     """
@@ -299,6 +300,7 @@ class GameWindow(pyglet.window.Window):
         self.menu_items = [start_game_menu_item, features_menu_item, end_game_menu_item]
         self.current_index = 0
         self.current_selection = self.menu_items[0]
+        self.set_feature = FEATURES_QUICKSTART  # used to save number of features user (3 or 4) for cards init
 
         help = "Select features with keyboard left or right"
         help_menu_item = TextBase(self.width // 2, self.height // 8, help, batch=self.batch)
@@ -325,10 +327,10 @@ class GameWindow(pyglet.window.Window):
             self.current_selection.bold = True
             self.current_selection.font_size += 10
         elif self.current_index == 1 and symbol == key.RIGHT:
-            self.set_feature = 'normal'
+            self.set_feature = FEATURES_NORMAL
             self.current_selection.text = MENU_TEXT_FEATURES_NORMAL
         elif self.current_index == 1 and symbol == key.LEFT:
-            self.set_feature = 'quickstart'
+            self.set_feature = FEATURES_QUICKSTART
             self.current_selection.text = MENU_TEXT_FEATURES_QUICKSTART
         elif symbol == key.ENTER:
             if self.current_index == 0:
@@ -346,7 +348,12 @@ class GameWindow(pyglet.window.Window):
         # for quickstart game (for beginners) make one feature False - 27 cards in game
         # for normal game leave all as True - 81 cards in game
         FeatSwitch = namedtuple("FeatSwitch", "pattern number shape color_name")
-        feat_switch = FeatSwitch(pattern=False, number=True, shape=True, color_name=True)
+
+        # random select features for the game after user menu choice
+        features = 4 * [True]
+        if self.set_feature == FEATURES_QUICKSTART:
+            features[random.randint(0, 3)] = False
+        feat_switch = FeatSwitch(*features)
 
         self.cards = Cards(rows=3, cols=4, feat_switch=feat_switch, batch=self.batch)
 
