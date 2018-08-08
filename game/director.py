@@ -59,35 +59,35 @@ class GameWindow(pyglet.window.Window):
         self.cards_number_display.count = self.cards.number_of_cards_left()
 
     def game(self):
-        if len(self.cards.card_clicked) == 3:
-            if self.cards.check_if_cards_are_set(self.cards.card_clicked):
-                if DEBUG: print(">>>> Found a set!")
-                self.score.count += 3
-                for c in self.cards.card_clicked:
-                    # Add three new cards and remove old ones
-                    old_x, old_y = c.x, c.y
-                    # remove card from both total cards list and used (drawn on screen)
-                    self.cards.cards_used.remove(c)
-                    self.cards.cards.remove(c)
-                    # remove card sprite from batch
-                    c.delete()
-                    # if there are cards left in total cards list, draw one of them
-                    # take note that this loop will execute always three times (three cards drawn)
-                    if self.cards.number_of_cards_left() > 0:
-                        self.cards.draw_single_random(old_x, old_y)
-            else:
-                # if cards are not a set, unselect them, and decrease score
-                self.score.count = self.score.count - 1 if self.score.count > 0 else 0
-                for c in self.cards.card_clicked:
-                    c.scale = SCALE_CARD_UNSELECTED
+        """If player clicked three cards check if they are a set"""
+        if self.cards.check_if_cards_are_set(self.cards.card_clicked):
+            if DEBUG: print(">>>> Found a set!")
+            self.score.count += 3
+            for c in self.cards.card_clicked:
+                # Add three new cards and remove old ones
+                old_x, old_y = c.x, c.y
+                # remove card from both total cards list and used (drawn on screen)
+                self.cards.cards_used.remove(c)
+                self.cards.cards.remove(c)
+                # remove card sprite from batch
+                c.delete()
+                # if there are cards left in total cards list, draw one of them
+                # take note that this loop will execute always three times (three cards drawn)
+                if self.cards.number_of_cards_left() > 0:
+                    self.cards.draw_single_random(old_x, old_y)
+        else:
+            # if cards are not a set, unselect them, and decrease score
+            self.score.count = self.score.count - 1 if self.score.count > 0 else 0
+            for c in self.cards.card_clicked:
+                c.scale = SCALE_CARD_UNSELECTED
 
-            self.cards.card_clicked = []
-            # display number of cards left on top of window
-            self.cards_number_display.count = self.cards.number_of_cards_left()
+        self.cards.card_clicked = []
+        # display number of cards left on top of window
+        self.cards_number_display.count = self.cards.number_of_cards_left()
 
-            # this is end of game when thare are no left sets visible
-            if not self.cards.check_if_set_exists_in_cards_used():
-                self.state = 'END'
+        # this is end of game when thare are no left sets visible
+        if not self.cards.check_if_set_exists_in_cards_used():
+            self.state = 'END'
 
     def end(self):
         if len(self.cards.cards_used) > 0:
@@ -156,6 +156,7 @@ class GameWindow(pyglet.window.Window):
             self.loading.delete()
             self.preload = False
         if self.state == 'GAME':
-            self.game()
+            if len(self.cards.card_clicked) == 3:
+                self.game()
         elif self.state == 'END':
             self.end()
