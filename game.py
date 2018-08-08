@@ -370,6 +370,8 @@ class GameWindow(pyglet.window.Window):
         self.menu = Menu(self)
         self.menu.menu_init()
 
+        self.loading = TextBase(150, 500, "Loading ...", batch=self.batch)
+
     def game_init(self):
         # Test if all cards are correctly preloaded
         assert len(self._cards) == 81, "Cards Preload Test"
@@ -484,6 +486,7 @@ class GameWindow(pyglet.window.Window):
             # card images loading during menu display
             seq = read_images_from_disk()
             self._cards = create_card_sprites(seq)  # TODO: Why is it so long?
+            self.loading.delete()
             self.preload = False
         if self.state == 'GAME':
             self.game()
