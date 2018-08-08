@@ -4,7 +4,8 @@ from collections import namedtuple
 import pyglet
 from pyglet.window import mouse, key
 
-from . import FEATURES_QUICKSTART, DEBUG, SCALE_CARD_UNSELECTED, SCALE_CARD_SELECTED
+from . import (FEATURES_QUICKSTART, DEBUG, SCALE_CARD_UNSELECTED,
+               SCALE_CARD_SELECTED, END_GAME_TEXT, LEFT_HUD_TEXT, RIGHT_HUD_TEXT)
 from .cards import Cards
 from .hud import TextBase, TextCountable
 from .menu import Menu
@@ -51,10 +52,10 @@ class GameWindow(pyglet.window.Window):
 
         self.cards = Cards(self._cards, rows=3, cols=4, feat_switch=feat_switch, batch=self.batch)
 
-        self.score = TextCountable(self.width - 180, self.height - 20, "Sets found: ", batch=self.batch)
+        self.score = TextCountable(self.width - 180, self.height - 20, RIGHT_HUD_TEXT, batch=self.batch)
         self.score.count = 0
 
-        self.cards_number_display = TextCountable(self.width - 450, self.height - 20, "Cards left: ", batch=self.batch)
+        self.cards_number_display = TextCountable(self.width - 450, self.height - 20, LEFT_HUD_TEXT, batch=self.batch)
         self.cards_number_display.count = self.cards.number_of_cards_left()
 
     def game(self):
@@ -93,7 +94,7 @@ class GameWindow(pyglet.window.Window):
             for c in self.cards.cards_used:
                 c.delete()  # remove any leftover cards from screen
             self.cards.cards_used = []
-        self.text_end_game = TextBase(self.width // 2, self.height // 2, "End of the Game", batch=self.batch)
+        self.text_end_game = TextBase(self.width // 2, self.height // 2, END_GAME_TEXT, batch=self.batch)
         self.text_end_game.font_size += 10
 
     def _delete_all_objects(self):

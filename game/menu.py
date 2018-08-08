@@ -1,7 +1,8 @@
 import pyglet
 from pyglet.window import key
 
-from . import MENU_TEXT_FEATURES_QUICKSTART, FEATURES_QUICKSTART, FEATURES_NORMAL, MENU_TEXT_FEATURES_NORMAL
+from . import (MENU_TEXT_FEATURES_QUICKSTART, FEATURES_QUICKSTART, FEATURES_NORMAL,
+               MENU_TEXT_FEATURES_NORMAL, MENU_START_GAME_TEXT, MENU_END_GAME_TEXT)
 from .hud import TextBase
 
 
@@ -10,11 +11,11 @@ class Menu:
         self.director = director
 
     def menu_init(self):
-        start_game_menu_item = TextBase(self.director.width // 2, self.director.height // 2 + 100, "Start Game", batch=self.director.batch)
+        start_game_menu_item = TextBase(self.director.width // 2, self.director.height // 2 + 100, MENU_START_GAME_TEXT, batch=self.director.batch)
         start_game_menu_item.bold = True
         start_game_menu_item.font_size += 10
         features_menu_item = TextBase(self.director.width // 2, self.director.height // 2, MENU_TEXT_FEATURES_QUICKSTART, batch=self.director.batch)
-        end_game_menu_item = TextBase(self.director.width // 2, self.director.height // 2 - 100, "Exit", batch=self.director.batch)
+        end_game_menu_item = TextBase(self.director.width // 2, self.director.height // 2 - 100, MENU_END_GAME_TEXT, batch=self.director.batch)
         self.menu_items = [start_game_menu_item, features_menu_item, end_game_menu_item]
         self.current_index = 0
         self.current_selection = self.menu_items[0]
