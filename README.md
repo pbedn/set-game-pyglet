@@ -21,7 +21,7 @@ In the beginning of game player see 12 cards. Goal is to find all sets.
 If there are no any sets visible, player can request three more cards, 
 with total of 15.
 
-Scoring: +1 point to set found, -1 for wrong set clicked.
+Scoring: +3 point to set found, -1 for wrong set clicked.
 
 ### Python implementation  
 
@@ -29,9 +29,9 @@ Scoring: +1 point to set found, -1 for wrong set clicked.
 
 * [x] Display number of cards left in unused deck 
 * [x] Replace old cards with fresh from unused deck when user finds correct set
-* [ ] Display menu in the beginning with features choice option (quickstart and complete option)
+* [x] Display menu in the beginning with features choice option (quickstart and complete option)
 * [ ] Add penalty for clicking wrong cards that will decrease score
-* [ ] Display end game screen
+* [x] Display end game screen
 * [ ] Add hints
     * Show how many sets are visible
     * Add button to automatically click random card from correct set 
