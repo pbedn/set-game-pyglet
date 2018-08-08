@@ -411,7 +411,11 @@ class GameWindow(pyglet.window.Window):
                 self.state = 'END'
 
     def end(self):
-        TextBase(self.width // 2, self.height // 2, "End Game", batch=self.batch)
+        if self.cards.cards_used:
+            for c in self.cards.cards_used:
+                c.delete()  # remove any leftover cards
+        txt = TextBase(self.width // 2, self.height // 2, "End of the Game", batch=self.batch)
+        txt.font_size += 10
         print("END GAME")
 
     def on_mouse_press(self, x, y, button, modifiers):
@@ -441,6 +445,8 @@ class GameWindow(pyglet.window.Window):
     def update(self, dt):
         if self.state == 'GAME':
             self.game()
+        elif self.state == 'END':
+            self.end()
 
 
 if __name__ == '__main__':
