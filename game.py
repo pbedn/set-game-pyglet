@@ -277,6 +277,8 @@ class GameWindow(pyglet.window.Window):
         self.frame_rate = 1
         # main batch for all objects
         self.batch = pyglet.graphics.Batch()
+        # start game with menu
+        self.state = 'MENU'
 
         # allow to choose set feature
         # for quickstart game (for beginners) make one feature False - 27 cards in game
@@ -292,33 +294,7 @@ class GameWindow(pyglet.window.Window):
         self.cards_number_display = Text(self.width - 450, self.height - 20, "Cards left: ", batch=self.batch)
         self.cards_number_display.count = self.cards.number_of_cards_left()
 
-    def on_mouse_press(self, x, y, button, modifiers):
-        # When player clicks mouse left button and clicked point (x,y) is inside card box
-        if button == mouse.LEFT:
-            for card in self.cards.cards_used:
-                if card.is_in_the_box(x, y):
-                    # that card is scaled up and added into clicked list if it was not there before
-                    if card not in self.cards.card_clicked:
-                        card.scale = SCALE_CARD_SELECTED
-                        self.cards.card_clicked.append(card)
-                        print(card)
-                    else:
-                        card.scale = SCALE_CARD_UNSELECTED
-                        self.cards.card_clicked.remove(card)
-
-    def on_key_press(self, symbol, modifiers):
-        if symbol == key.ESCAPE:
-            pyglet.app.exit()
-        if symbol == key.H:
-            print("hint")
-        if symbol == key.N:
-            print("new row")
-
-    def on_draw(self):
-        self.clear()
-        self.batch.draw()
-
-    def update(self, dt):
+    def game(self):
         if len(self.cards.card_clicked) == 3:
             if self.cards.check_if_cards_are_set(self.cards.card_clicked):
                 print(">>>> Found a set!")
@@ -346,11 +322,40 @@ class GameWindow(pyglet.window.Window):
 
             # this is end of game when thare are no left sets visible
             if not self.cards.check_if_set_exists_in_cards_used():
-                # TODO: display menu after win
-                print("END GAME")
-                import time
-                time.sleep(2)
-                pyglet.app.exit()
+                self.state = 'END'
+
+    def end(self):
+        print("END GAME")
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        # When player clicks mouse left button and clicked point (x,y) is inside card box
+        if button == mouse.LEFT:
+            for card in self.cards.cards_used:
+                if card.is_in_the_box(x, y):
+                    # that card is scaled up and added into clicked list if it was not there before
+                    if card not in self.cards.card_clicked:
+                        card.scale = SCALE_CARD_SELECTED
+                        self.cards.card_clicked.append(card)
+                        print(card)
+                    else:
+                        card.scale = SCALE_CARD_UNSELECTED
+                        self.cards.card_clicked.remove(card)
+
+    def on_key_press(self, symbol, modifiers):
+        if symbol == key.ESCAPE:
+            self.state = 'MENU'
+        if symbol == key.H:
+            print("hint")
+        if symbol == key.N:
+            print("new row")
+
+    def on_draw(self):
+        self.clear()
+        self.batch.draw()
+
+    def update(self, dt):
+        if self.state == 'GAME':
+            self.game()
 
 
 if __name__ == '__main__':
