@@ -68,15 +68,14 @@ class Card(pyglet.sprite.Sprite):
         return "Card: {}, {}, {}, {}".format(self.color_name, self.shape, self.pattern, self.number)
 
 
-def select_features(func, switch):
+def select_features(cards, switch):
     """
     Remove selected feature from total cards list
 
-    :param func: function reading images from resources
+    :param cards: list if cards image sprites
     :param switch: namedtuple with boolean features
     :return: List of cards after removal selected feature
     """
-    cards = func()
     new_cards = cards.copy()
 
     def remove_cards(attribute, features, lst):
@@ -95,21 +94,12 @@ def select_features(func, switch):
     return new_cards
 
 
-def read_card_images():
+def create_card_sprites(seq):
     """
-    Read images from disk into sequence and grid into one list
+    Iterate through image sequence and create card sprites
 
     :return: List containing all cards read from image resources
     """
-    red_deck = pyglet.image.load('res/sets-red.png')
-    green_deck = pyglet.image.load('res/sets-green.png')
-    purple_deck = pyglet.image.load('res/sets-purple.png')
-    red_deck_seq = pyglet.image.ImageGrid(red_deck, 9, 3, row_padding=2)
-    green_deck_seq = pyglet.image.ImageGrid(green_deck, 9, 3, row_padding=2)
-    purple_deck_seq = pyglet.image.ImageGrid(purple_deck, 9, 3, row_padding=2)
-
-    seq = {'red': red_deck_seq, 'green': green_deck_seq, 'purple': purple_deck_seq}
-
     card_list = []
     for color, s in seq.items():
         card_seq = iter(reversed(s))
@@ -119,6 +109,22 @@ def read_card_images():
                     card = card_seq.__next__()
                     card_list.append(Card(card, color, shape, pattern, number))
     return card_list
+
+
+def read_images_from_disk():
+    """
+    Read images from disk into sequence and grid
+
+    :return: Dictionary with three image grid sequences
+    """
+    red_deck = pyglet.image.load('res/sets-red.png')
+    green_deck = pyglet.image.load('res/sets-green.png')
+    purple_deck = pyglet.image.load('res/sets-purple.png')
+    red_deck_seq = pyglet.image.ImageGrid(red_deck, 9, 3, row_padding=2)
+    green_deck_seq = pyglet.image.ImageGrid(green_deck, 9, 3, row_padding=2)
+    purple_deck_seq = pyglet.image.ImageGrid(purple_deck, 9, 3, row_padding=2)
+    seq = {'red': red_deck_seq, 'green': green_deck_seq, 'purple': purple_deck_seq}
+    return seq
 
 
 class TextBase(pyglet.text.Label):
@@ -159,12 +165,12 @@ class Cards:
 
     and generated but hidden for the user
     """
-    def __init__(self, rows, cols, feat_switch, batch):
+    def __init__(self, cards_preloaded, rows, cols, feat_switch, batch):
         self.rows = rows
         self.cols = cols
         self.batch = batch
 
-        self.cards = select_features(read_card_images, feat_switch)
+        self.cards = select_features(cards_preloaded, feat_switch)
         self._check_cards_number(feat_switch)
 
         self.cards_used = []
@@ -373,7 +379,7 @@ class GameWindow(pyglet.window.Window):
             features[random.randint(0, 3)] = False
         feat_switch = FeatSwitch(*features)
 
-        self.cards = Cards(rows=3, cols=4, feat_switch=feat_switch, batch=self.batch)
+        self.cards = Cards(self._cards, rows=3, cols=4, feat_switch=feat_switch, batch=self.batch)
 
         self.score = TextCountable(self.width-180, self.height-20, "Sets found: ", batch=self.batch)
         self.score.count = 0
