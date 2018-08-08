@@ -411,12 +411,27 @@ class GameWindow(pyglet.window.Window):
                 self.state = 'END'
 
     def end(self):
-        if self.cards.cards_used:
+        if len(self.cards.cards_used) > 0:
             for c in self.cards.cards_used:
                 c.delete()  # remove any leftover cards
         txt = TextBase(self.width // 2, self.height // 2, "End of the Game", batch=self.batch)
         txt.font_size += 10
-        print("END GAME")
+
+    def _delete_all_objects(self):
+        for c in self.cards.cards_used:
+            c.delete()
+        self.score.delete()
+        self.cards_number_display.delete()
+
+    def game_restart(self):
+        self._delete_all_objects()
+        self.game_init()
+        self.state = 'GAME'
+
+    def menu_restart(self):
+        self._delete_all_objects()
+        self.menu.menu_init()
+        self.state = 'MENU'
 
     def on_mouse_press(self, x, y, button, modifiers):
         # When player clicks mouse left button and clicked point (x,y) is inside card box
@@ -435,7 +450,11 @@ class GameWindow(pyglet.window.Window):
     def on_key_press(self, symbol, modifiers):
         if symbol == key.ESCAPE:
             pyglet.app.exit()
-        if self.state == "MENU":
+        if symbol == key.R and self.state != 'MENU':
+            self.game_restart()
+        if symbol == key.F10 and self.state != 'MENU':
+            self.menu_restart()
+        if self.state == 'MENU':
             self.menu.choose_menu_item(symbol)
 
     def on_draw(self):
