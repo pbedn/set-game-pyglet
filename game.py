@@ -427,13 +427,17 @@ class GameWindow(pyglet.window.Window):
     def end(self):
         if len(self.cards.cards_used) > 0:
             for c in self.cards.cards_used:
-                c.delete()  # remove any leftover cards
+                c.delete()  # remove any leftover cards from screen
+            self.cards.cards_used = []
         txt = TextBase(self.width // 2, self.height // 2, "End of the Game", batch=self.batch)
         txt.font_size += 10
 
     def _delete_all_objects(self):
-        for c in self.cards.cards_used:
-            c.delete()
+        """Remove all visible sprite cards and text labels from screen"""
+        if len(self.cards.cards_used) > 0:
+            for c in self.cards.cards_used:
+                c.delete()
+            self.cards.cards_used = []
         self.score.delete()
         self.cards_number_display.delete()
 
