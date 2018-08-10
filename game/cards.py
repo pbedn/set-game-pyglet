@@ -4,7 +4,7 @@ from itertools import combinations
 import pyglet
 
 from . import SCALE_CARD_UNSELECTED, Box, FEATURES
-from .resources import select_features
+from .resources import select_features, create_card_sprites, read_images_from_disk
 
 
 class Card(pyglet.sprite.Sprite):
@@ -48,7 +48,11 @@ class Cards:
         self.cols = cols
         self.director = director
 
-        self.cards = select_features(cards_preloaded, feat_switch)
+        # preload images from disk
+        # TODO: this is slow process (CPU)
+        seq = read_images_from_disk()
+        preloaded = create_card_sprites(seq)
+        self.cards = select_features(preloaded, feat_switch)
         self._check_cards_number(feat_switch)
 
         self.cards_used = []
