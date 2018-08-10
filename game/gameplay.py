@@ -14,6 +14,8 @@ class GamePlay(State):
             self.d.fsm.transition('toGAME')
         if self.d.keys[key.F10]:
             self.d.fsm.transition('toMENU')
+        if self.d.keys[key.N]:
+            self.add_new_column()
 
         # display a two cards hint
         if self.d.keys[key.H] and self.d.cards.get_two_cards_from_random_set():
@@ -62,6 +64,13 @@ class GamePlay(State):
 
         if self.d.cards.number_of_cards_left() > 0:
             self.d.cards.draw_single_random(old_x, old_y)
+
+    def add_new_column(self):
+        """Draw additional fifth column of three cards at player request"""
+        self.d.cards.draw_random(800)
+
+        # update cards display
+        self.d.cards_number_display.count = self.d.cards.number_of_cards_left()
 
 
 class GameEnd(State):
