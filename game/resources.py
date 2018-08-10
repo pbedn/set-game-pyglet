@@ -12,9 +12,9 @@ def read_images_from_disk():
 
     :return: Dictionary with three image grid sequences
     """
-    red_deck = pyglet.image.load('res/sets-red.png')
-    green_deck = pyglet.image.load('res/sets-green.png')
-    purple_deck = pyglet.image.load('res/sets-purple.png')
+    red_deck = pyglet.resource.image('sets-red.png')
+    green_deck = pyglet.resource.image('sets-green.png')
+    purple_deck = pyglet.resource.image('sets-purple.png')
     red_deck_seq = pyglet.image.ImageGrid(red_deck, 9, 3, row_padding=2)
     green_deck_seq = pyglet.image.ImageGrid(green_deck, 9, 3, row_padding=2)
     purple_deck_seq = pyglet.image.ImageGrid(purple_deck, 9, 3, row_padding=2)
