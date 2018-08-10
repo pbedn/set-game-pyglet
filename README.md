@@ -44,6 +44,15 @@ At current state game is finished and playable.
 Possible enhancements could be better card graphics, 
 display border around clicked cards, and try to optimize card preloading time (before each game start).  
 
+*Game Menu*
+![Game Menu](docs/game_menu.png)
+
+*Quickstart Mode*
+![Quickstart Mode](docs/game_quickstart.png)
+
+*Normal Mode with 5th column*
+![Normal Mode with 5th column](docs/game_normal_fifth_column.png)
+
 ---
 
 Reference:
