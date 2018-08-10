@@ -3,7 +3,7 @@ import pyglet
 
 class TextBase(pyglet.text.Label):
     """
-    Display text on the screen
+    Base class for text on the screen
     """
     def __init__(self, x, y, text, batch, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -18,6 +18,9 @@ class TextBase(pyglet.text.Label):
 
 
 class TextCountable(TextBase):
+    """
+    Class for text on the screen with variable count
+    """
     def __init__(self, x, y, _text, batch, *args, **kwargs):
         super().__init__(x, y, _text, batch, *args, **kwargs)
         self._text = _text

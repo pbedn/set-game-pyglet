@@ -2,7 +2,7 @@ import random
 
 import pyglet
 
-from . import FEATURES, PATTERNS, SHAPES, NUMBERS
+from . import FEATURES, PATTERNS, SHAPES, NUMBERS, DEBUG
 from . import cards
 
 
@@ -30,7 +30,7 @@ def select_features(cards, switch):
     :param switch: namedtuple with boolean features
     :return: List of cards after removal selected feature
     """
-    new_cards = cards.copy()
+    new_cards = [i for i in cards]
 
     def remove_cards(attribute, features, lst):
         if not getattr(switch, attribute):
