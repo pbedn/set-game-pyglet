@@ -3,7 +3,7 @@ from itertools import combinations
 
 import pyglet
 
-from . import SCALE_CARD_UNSELECTED, Box, FEATURES
+from . import SCALE_CARD_UNSELECTED, SCALE_CARD_SELECTED, Box, FEATURES
 from .resources import select_features, create_card_sprites, read_images_from_disk
 
 
@@ -19,6 +19,8 @@ class Card(pyglet.sprite.Sprite):
         self.number = card_number
         self.scale = SCALE_CARD_UNSELECTED
         self.scale_x = 0.9
+        self.row = 0
+        self.col = 0
 
         # Coordinates of box at init are out of real window
         self.box = Box(5000, 5000, 100, 100)
@@ -46,6 +48,7 @@ class Cards:
     def __init__(self, director, rows, cols, feat_switch):
         self.rows = rows
         self.cols = cols
+        self.grid = [[None] * (self.cols + 1) for _ in range(self.rows)]
         self.director = director
 
         # preload images from disk
@@ -59,7 +62,7 @@ class Cards:
         self.card_clicked = []
 
         for i in range(self.cols):
-            self.draw_random(i*200)
+            self.draw_random(i, 200)
 
     def _check_cards_number(self, feat_switch):
         """
@@ -77,17 +80,24 @@ class Cards:
         for card in self.cards:
             yield card
 
+    def set_grid(self, row, col, card):
+        """Assign card to the grid"""
+        self.grid[row][col] = card
+        card.row = row
+        card.col = col
+
     def draw_selected(self, card, x, y):
         """Set attributes and add to batch a selected card"""
         card.set_position_and_box(x, y)
-        card.batch = self.director.batch
+        card.batch = self.director.batch # FIXME: Do I need director here?
 
-    def draw_random(self, x):
+    def draw_random(self, col, offset):
         """
         Draw one column of random cards
 
-        :param x: position offset of first drawn card
+        :param col: column
         """
+        x = col * offset
         cards = [c for c in self.cards if c not in self.cards_used]
         random.shuffle(cards)
         for i, card in enumerate(cards):
@@ -95,6 +105,7 @@ class Cards:
                 break
             self.draw_selected(card, x + 25, 150 * i + 100)
             self.cards_used.append(card)
+            self.set_grid(row=i, col=col, card=card)
 
     def draw_single_random(self, x, y):
         """Draw single random card at given coordinates"""
@@ -145,3 +156,49 @@ class Cards:
         """Number of cards that are not draw on the screen"""
         num = len(self.cards) - len(self.cards_used)
         return num if num >= 0 else 0
+
+    def display_hint(self):
+        """Select and scale up two cards"""
+        self.card_hint1.scale = SCALE_CARD_SELECTED
+        self.card_hint1.clicked = True
+        self.card_clicked.append(self.card_hint1)
+        self.card_hint2.scale = SCALE_CARD_SELECTED
+        self.card_clicked.append(self.card_hint2)
+
+    def remove_old_card_and_add_new_one(self, c, add_new_cards):
+        """
+        First remove card from cards list and its sprite
+        next add new one in the same place
+        """
+        old_x, old_y = c.x, c.y
+        self.cards_used.remove(c)
+        self.cards.remove(c)
+        c.delete()  # remove card sprite from batch
+        # self.grid[c.row][c.col] = False
+
+        if self.number_of_cards_left() > 0 and add_new_cards:
+            self.draw_single_random(old_x, old_y)
+
+    def add_new_column(self):
+        """Draw additional fifth column of three cards at player request"""
+        self.draw_random(col=1, offset=800)
+
+        # update cards display
+        self.director.cards_number_display.count = self.number_of_cards_left()
+
+    def redraw_cards(self):
+        """Redraw 12 cards to be in 4 columns only"""
+        # for card in self.director.cards.card_clicked:
+        #     print("Redraw, row, col", card.row, card.col)
+        #     if card.col == 3:
+        #         card_to_be_moved = card
+        #     else:
+        #         card_empty = card
+        #
+        # x, y = card_empty.x, card_empty.y
+        # # card_to_be_moved.set_position_and_box(card_empty.x, card_empty.y)
+        # # card_to_be_moved.row, card_to_be_moved.col = card_empty.row, card_empty.col
+        # card_empty.__dict__.update(card_to_be_moved.__dict__)
+        # card_to_be_moved.set_position_and_box(x, y)
+        pass
+

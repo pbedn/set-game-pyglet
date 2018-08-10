@@ -1,7 +1,7 @@
 import pyglet
 from pyglet.window import key, mouse
 
-from .gameplay import GamePlay, GameEnd, TransitionToGame, TransitionToEnd
+from .gameplay import GamePlay, GameEnd, TransitionToGame, TransitionToEnd, TransitonToRedraw
 from .menu import GameMenu, TransitionToMenu
 from . import (DEBUG, SCALE_CARD_UNSELECTED, SCALE_CARD_SELECTED)
 from .fsm import FSM
@@ -30,6 +30,7 @@ class GameDirector(pyglet.window.Window):
         self.fsm.transitions['toMENU'] = TransitionToMenu('MENU', self)
         self.fsm.transitions['toGAME'] = TransitionToGame('GAME', self)
         self.fsm.transitions['toEND'] = TransitionToEnd('END', self)
+        self.fsm.transitions['toREDRAW'] = TransitonToRedraw('GAME', self)
 
         self.fsm.transition('toMENU')
 
@@ -62,7 +63,8 @@ class GameDirector(pyglet.window.Window):
                     if card not in self.cards.card_clicked:
                         card.scale = SCALE_CARD_SELECTED
                         self.cards.card_clicked.append(card)
-                        print(card) if DEBUG else None
+                        print(card, card.row, card.col, 'CLICK') if DEBUG else None
+                        print(self.cards.grid[card.row][card.col], 'GRID')
                     else:
                         card.scale = SCALE_CARD_UNSELECTED
                         self.cards.card_clicked.remove(card)
