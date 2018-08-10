@@ -25,17 +25,24 @@ Scoring: +3 point to set found, -1 for wrong set clicked.
 
 ### Python implementation  
 
-**TODO**
+At current state game is finished and playable.
+
+**Features**
 
 * [x] Display number of cards left in unused deck 
 * [x] Replace old cards with fresh from unused deck when user finds correct set
 * [x] Display menu in the beginning with features choice option (quickstart and complete option)
-* [ ] Add penalty for clicking wrong cards that will decrease score
+* [x] Add penalty for clicking wrong cards that will decrease score
 * [x] Display end game screen
-* [ ] Add hints
-    * Show how many sets are visible
-    * Add button to automatically click random card from correct set 
+* [x] Implement Finite State Machine for three game states (menu, game, end) and transitions between them
+* [x] Hints: Add H key to automatically show two out of three cards from random set
+* [x] Add restart capability
+    * Return to game
+    * Return to menu
+* [x] Draw additional fifth column at player request
 
+Possible enhancements could be better card graphics, 
+display border around clicked cards, and try to optimize card preloading time (before each game start).  
 
 ---
 
