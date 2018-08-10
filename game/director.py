@@ -18,6 +18,7 @@ class GameDirector(pyglet.window.Window):
         self.batch = pyglet.graphics.Batch()
 
         self.first_run = [True] * 2
+        self.new_column_used = False
 
         self.keys = key.KeyStateHandler()
         self.push_handlers(self.keys)

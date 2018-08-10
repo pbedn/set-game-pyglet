@@ -104,7 +104,7 @@ class TransitionToMenu(State):
         Menu Select: Quickstart or Normal
         Key shortcuts:
             R   - Restart
-            N   - Add 5th cards column
+            N   - Add 5th cards column (currently you can do it only once)
             F10 - Main Menu
             ESC - Exit app
         """

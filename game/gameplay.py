@@ -14,8 +14,9 @@ class GamePlay(State):
             self.d.fsm.transition('toGAME')
         if self.d.keys[key.F10]:
             self.d.fsm.transition('toMENU')
-        if self.d.keys[key.N]:
+        if self.d.keys[key.N] and not self.d.new_column_used:
             self.add_new_column()
+            self.d.new_column_used = True
 
         # display a two cards hint
         if self.d.keys[key.H] and self.d.cards.get_two_cards_from_random_set():
@@ -27,8 +28,12 @@ class GamePlay(State):
             if self.d.cards.check_if_cards_are_set(clicked):
                 print(">>>> Found a set!") if DEBUG else None
                 self.d.score.count += 3
+
+                # reset deck to 12 cards if 15 were in the game
+                add_new_cards = False if len(self.d.cards.cards_used) == 15 else True
+
                 for c in clicked:
-                    self.remove_old_card_and_add_new_one(c)
+                    self.remove_old_card_and_add_new_one(c, add_new_cards)
             else:
                 # un-select them, and decrease score
                 self.d.score.count = self.d.score.count - 1 if self.d.score.count > 0 else 0
@@ -52,7 +57,7 @@ class GamePlay(State):
         self.d.cards.card_hint2.scale = SCALE_CARD_SELECTED
         self.d.cards.card_clicked.append(self.d.cards.card_hint2)
 
-    def remove_old_card_and_add_new_one(self, c):
+    def remove_old_card_and_add_new_one(self, c, add_new_cards):
         """
         First remove card from cards list and its sprite
         next add new one in the same place
@@ -62,7 +67,7 @@ class GamePlay(State):
         self.d.cards.cards.remove(c)
         c.delete()  # remove card sprite from batch
 
-        if self.d.cards.number_of_cards_left() > 0:
+        if self.d.cards.number_of_cards_left() > 0 and add_new_cards:
             self.d.cards.draw_single_random(old_x, old_y)
 
     def add_new_column(self):
