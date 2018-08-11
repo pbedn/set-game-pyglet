@@ -2,7 +2,7 @@ import random
 
 import pyglet
 
-from . import FEATURES, PATTERNS, SHAPES, NUMBERS, DEBUG
+from . import FEATURES, PATTERNS, SHAPES, NUMBERS
 from . import cards
 
 
@@ -48,7 +48,7 @@ def select_features(cards, switch):
     return new_cards
 
 
-def create_card_sprites(seq):
+def create_card_sprites(seq, scale):
     """
     Iterate through image sequence and create card sprites
 
@@ -60,8 +60,12 @@ def create_card_sprites(seq):
         for pattern in PATTERNS:
             for shape in SHAPES:
                 for number in NUMBERS:
-                    card = card_seq.__next__()
-                    card_list.append(cards.Card(card, color, shape, pattern, number))
+                    image = card_seq.__next__()
+                    card_sprite = cards.Card(image, color, shape, pattern, number)
+                    card_sprite.scale = scale
+                    card_list.append(card_sprite)
+    return card_list
+
 
 # -----------------------
 # Loading Single Image
