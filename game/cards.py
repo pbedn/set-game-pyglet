@@ -3,8 +3,9 @@ from itertools import combinations
 
 import pyglet
 
-from . import SCALE_CARD_UNSELECTED, Box, FEATURES
-from .resources import select_features, create_card_sprites, read_images_from_disk
+from . import Box, FEATURES
+from .resources import (select_features, create_card_sprites, read_images_from_disk,
+                        create_card_sprites_single_image, read_images_from_disk_single_image)
 
 
 class Card(pyglet.sprite.Sprite):
@@ -17,8 +18,6 @@ class Card(pyglet.sprite.Sprite):
         self.shape = card_shape
         self.pattern = card_pattern
         self.number = card_number
-        self.scale = SCALE_CARD_UNSELECTED
-        self.scale_x = 0.9
 
         # Coordinates of box at init are out of real window
         self.box = Box(5000, 5000, 100, 100)
@@ -46,12 +45,16 @@ class Cards:
     def __init__(self, director, rows, cols, feat_switch):
         self.rows = rows
         self.cols = cols
-        self.director = director
+        self.d = director
 
         # preload images from disk
         # TODO: this is slow process (CPU)
-        seq = read_images_from_disk()
-        preloaded = create_card_sprites(seq)
+        if self.d.single_image_graphic:
+            seq = read_images_from_disk_single_image('new-sets.png', 9, 9)
+            preloaded = create_card_sprites_single_image(seq, self.d.constants.scale_card_unselected)
+        else:
+            seq = read_images_from_disk()
+            preloaded = create_card_sprites(seq, self.d.constants.scale_card_unselected)
         self.cards = select_features(preloaded, feat_switch)
         self._check_cards_number(feat_switch)
 
@@ -80,7 +83,7 @@ class Cards:
     def draw_selected(self, card, x, y):
         """Set attributes and add to batch a selected card"""
         card.set_position_and_box(x, y)
-        card.batch = self.director.batch
+        card.batch = self.d.batch
 
     def draw_random(self, x):
         """

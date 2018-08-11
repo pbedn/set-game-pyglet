@@ -40,21 +40,25 @@ At current state game is finished and playable.
     * Return to game
     * Return to menu
 * [x] Draw additional fifth column at player request
+* [x] Added second graphics to the game, old graphics can be chosen by running with --old-graphic parameter
 
-Possible enhancements could be better card graphics, 
-display border around clicked cards, and try to optimize card preloading time (before each game start).  
 
 *Game Menu*
 
-<img src="docs/game_menu.png" width="800" height="490" />
+<img src="docs/game_menu.png" width="400" height="245" />
 
 *Quickstart Mode*
 
-<img src="docs/game_quickstart.png" width="800" height="490" />
+<img src="docs/game_quickstart.png" width="400" height="245" />
 
 *Normal Mode with 5th column*
 
-<img src="docs/game_normal_fifth_column.png" width="800" height="490" />
+<img src="docs/game_normal_fifth_column.png" width="400" height="245" />
+
+*Normal Mode with 5th column - New Graphics*
+
+<img src="docs/game_normal_fifth_column-new-graphics.png" width="400" height="245" />
+
 
 ---
 
