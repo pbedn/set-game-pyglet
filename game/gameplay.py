@@ -95,7 +95,8 @@ class TransitionToGame(State):
         print(__class__.__name__) if DEBUG else None
 
         self.d.delete_all_objects()
-
+        self.d.new_column_used = False
+        
         # randomly select features for the game after user menu choice
         # quickstart game (one feature is False) - 27 cards in game
         # normal game - 81 cards in game
