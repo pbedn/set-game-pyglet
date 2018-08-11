@@ -20,6 +20,10 @@ class GamePlay(State):
 
         # display a two cards hint
         if self.d.keys[key.H] and self.d.cards.get_two_cards_from_random_set():
+            for c in self.d.cards.card_clicked:
+                c.scale = self.d.constants.scale_card_unselected
+            self.d.cards.card_clicked = []
+            
             self.display_hint()
 
         clicked = self.d.cards.card_clicked
@@ -51,10 +55,11 @@ class GamePlay(State):
 
     def display_hint(self):
         """Select and scale up two cards"""
-        self.d.cards.card_hint1.scale = self.d.constants.scale_card_unselected
+        self.d.cards.card_hint1.scale = self.d.constants.scale_card_selected
         self.d.cards.card_hint1.clicked = True
         self.d.cards.card_clicked.append(self.d.cards.card_hint1)
         self.d.cards.card_hint2.scale = self.d.constants.scale_card_selected
+        self.d.cards.card_hint2.clicked = True
         self.d.cards.card_clicked.append(self.d.cards.card_hint2)
 
     def remove_old_card_and_add_new_one(self, c, add_new_cards):
