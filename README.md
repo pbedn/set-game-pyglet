@@ -45,19 +45,19 @@ At current state game is finished and playable.
 
 *Game Menu*
 
-<img src="docs/game_menu.png" width="800" height="490" />
+<img src="docs/game_menu.png" width="400" height="245" />
 
 *Quickstart Mode*
 
-<img src="docs/game_quickstart.png" width="800" height="490" />
+<img src="docs/game_quickstart.png" width="400" height="245" />
 
 *Normal Mode with 5th column*
 
-<img src="docs/game_normal_fifth_column.png" width="800" height="490" />
+<img src="docs/game_normal_fifth_column.png" width="400" height="245" />
 
 *Normal Mode with 5th column - New Graphics*
 
-<img src="docs/game_normal_fifth_column-new-graphics.png" width="800" height="490" />
+<img src="docs/game_normal_fifth_column-new-graphics.png" width="400" height="245" />
 
 
 ---
