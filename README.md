@@ -59,6 +59,15 @@ At current state game is finished and playable.
 
 <img src="docs/game_normal_fifth_column-new-graphics.png" width="400" height="245" />
 
+---
+
+### Build exe in Windows
+
+```
+pip install pyinstaller
+pyinstaller -cF run_game.spec
+```
+
 
 ---
 
