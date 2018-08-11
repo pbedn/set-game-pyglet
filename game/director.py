@@ -11,7 +11,7 @@ class GameDirector(pyglet.window.Window):
     """
     Game Director managing all actions
     """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, new_graphic, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.set_location(50, 50)  # location of upper left window corner
         self.frame_rate = 0.1
@@ -19,6 +19,7 @@ class GameDirector(pyglet.window.Window):
 
         self.first_run = [True] * 2
         self.new_column_used = False
+        self.single_image_graphic = new_graphic
 
         self.keys = key.KeyStateHandler()
         self.push_handlers(self.keys)
