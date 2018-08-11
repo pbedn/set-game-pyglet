@@ -1,7 +1,7 @@
 import random
 from pyglet.window import key
 
-from . import (DEBUG, SCALE_CARD_SELECTED, SCALE_CARD_UNSELECTED, FEATURES_QUICKSTART,
+from . import (DEBUG, FEATURES_QUICKSTART,
                RIGHT_HUD_TEXT, LEFT_HUD_TEXT, END_GAME_TEXT, FeatSwitch)
 from .cards import Cards
 from .fsm import State
@@ -38,7 +38,7 @@ class GamePlay(State):
                 # un-select them, and decrease score
                 self.d.score.count = self.d.score.count - 1 if self.d.score.count > 0 else 0
                 for c in self.d.cards.card_clicked:
-                    c.scale = SCALE_CARD_UNSELECTED
+                    c.scale = self.d.constants.scale_card_unselected
 
             self.d.cards.card_clicked = []
 
@@ -51,10 +51,10 @@ class GamePlay(State):
 
     def display_hint(self):
         """Select and scale up two cards"""
-        self.d.cards.card_hint1.scale = SCALE_CARD_SELECTED
+        self.d.cards.card_hint1.scale = self.d.constants.scale_card_unselected
         self.d.cards.card_hint1.clicked = True
         self.d.cards.card_clicked.append(self.d.cards.card_hint1)
-        self.d.cards.card_hint2.scale = SCALE_CARD_SELECTED
+        self.d.cards.card_hint2.scale = self.d.constants.scale_card_selected
         self.d.cards.card_clicked.append(self.d.cards.card_hint2)
 
     def remove_old_card_and_add_new_one(self, c, add_new_cards):

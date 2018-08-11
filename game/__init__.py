@@ -6,8 +6,6 @@ SHAPES = ['oval', 'diamond', 'squiggle']
 NUMBERS = ['one', 'two', 'three']
 PATTERNS = ['solid', 'striped', 'outlined']
 FEATURES = {'color_name': COLORS, 'shape': SHAPES, 'number': NUMBERS, 'pattern': PATTERNS}
-SCALE_CARD_SELECTED = 0.80
-SCALE_CARD_UNSELECTED = 0.70
 MENU_START_GAME_TEXT = "Start Game"
 MENU_END_GAME_TEXT = "Exit"
 MENU_TEXT_FEATURES_QUICKSTART = "Quickstart: 3 features"
@@ -22,3 +20,9 @@ LEFT_HUD_TEXT = "Cards left: "
 Box = namedtuple("Box", "x y right top")
 
 FeatSwitch = namedtuple("FeatSwitch", "pattern number shape color_name")
+
+
+class Constants:
+    def __init__(self, card_scale):
+        self.scale_card_selected = card_scale * 1.2
+        self.scale_card_unselected = card_scale

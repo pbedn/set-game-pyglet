@@ -3,7 +3,7 @@ from pyglet.window import key, mouse
 
 from .gameplay import GamePlay, GameEnd, TransitionToGame, TransitionToEnd
 from .menu import GameMenu, TransitionToMenu
-from . import (DEBUG, SCALE_CARD_UNSELECTED, SCALE_CARD_SELECTED)
+from . import DEBUG, Constants
 from .fsm import FSM
 
 
@@ -20,6 +20,10 @@ class GameDirector(pyglet.window.Window):
         self.first_run = [True] * 2
         self.new_column_used = False
         self.single_image_graphic = new_graphic
+
+        card_scale = 2.0 if self.single_image_graphic else 0.6
+
+        self.constants = Constants(card_scale=card_scale)
 
         self.keys = key.KeyStateHandler()
         self.push_handlers(self.keys)
@@ -62,11 +66,11 @@ class GameDirector(pyglet.window.Window):
                 if card.is_in_the_box(x, y):
                     # that card is scaled up and added into clicked list if it was not there before
                     if card not in self.cards.card_clicked:
-                        card.scale = SCALE_CARD_SELECTED
+                        card.scale = self.constants.scale_card_selected
                         self.cards.card_clicked.append(card)
                         print(card) if DEBUG else None
                     else:
-                        card.scale = SCALE_CARD_UNSELECTED
+                        card.scale = self.constants.scale_card_unselected
                         self.cards.card_clicked.remove(card)
 
     def on_key_press(self, symbol, modifiers):

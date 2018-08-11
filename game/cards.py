@@ -3,8 +3,9 @@ from itertools import combinations
 
 import pyglet
 
-from . import SCALE_CARD_UNSELECTED, Box, FEATURES
-from .resources import select_features, create_card_sprites, read_images_from_disk
+from . import Box, FEATURES
+from .resources import (select_features, create_card_sprites, read_images_from_disk,
+                        create_card_sprites_single_image, read_images_from_disk_single_image)
 
 
 class Card(pyglet.sprite.Sprite):
@@ -17,8 +18,6 @@ class Card(pyglet.sprite.Sprite):
         self.shape = card_shape
         self.pattern = card_pattern
         self.number = card_number
-        self.scale = SCALE_CARD_UNSELECTED
-        self.scale_x = 0.9
 
         # Coordinates of box at init are out of real window
         self.box = Box(5000, 5000, 100, 100)
