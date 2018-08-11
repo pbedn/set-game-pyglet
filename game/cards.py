@@ -18,6 +18,8 @@ class Card(pyglet.sprite.Sprite):
         self.shape = card_shape
         self.pattern = card_pattern
         self.number = card_number
+        self.image.anchor_x = self.image.width // 2
+        self.image.anchor_y = self.image.height // 2
 
         # Coordinates of box at init are out of real window
         self.box = Box(5000, 5000, 100, 100)
@@ -29,8 +31,8 @@ class Card(pyglet.sprite.Sprite):
 
     def is_in_the_box(self, x, y):
         """Check if point (x,y) is inside card box (rectangle)"""
-        if self.box.x <= x <= self.box.right \
-                and self.box.y <= y <= self.box.top:
+        if self.box.x <= x + self.image.width <= self.box.right \
+                and self.box.y <= y + self.image.height <= self.box.top:
             return True
 
     def __str__(self):
@@ -96,7 +98,7 @@ class Cards:
         for i, card in enumerate(cards):
             if i >= self.rows:
                 break
-            self.draw_selected(card, x + 25, 150 * i + 100)
+            self.draw_selected(card, x + 100, 150 * i + 100)
             self.cards_used.append(card)
 
     def draw_single_random(self, x, y):
