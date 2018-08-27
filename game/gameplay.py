@@ -144,6 +144,10 @@ class TransitionToGame(State):
                                                     LEFT_HUD_TEXT,
                                                     batch=self.d.batch)
         self.d.cards_number_display.count = self.d.cards.number_of_cards_left()
+        self.d.logo = TextBase(180,
+                               self.d.height - 20,
+                               "Mode: {}".format(self.d.set_feature),
+                               batch=self.d.batch)
 
         self.d.fsm.set_state('GAME')
 
