@@ -138,8 +138,8 @@ class Cards:
 
     def get_two_cards_from_random_set(self):
         list_of_sets = [c for c in combinations(self.cards_used, 3) if self.check_if_cards_are_set(c)]
-        number_of_sets_left = len(list_of_sets)
-        if number_of_sets_left > 0:
+        self.number_of_sets_left = len(list_of_sets)
+        if self.number_of_sets_left > 0:
             random.shuffle(list_of_sets)
             self.card_hint1 = list_of_sets[0][0]
             self.card_hint2 = list_of_sets[0][1]

@@ -54,6 +54,10 @@ class GameDirector(pyglet.window.Window):
             self.text_end_game.delete()
         except AttributeError:
             pass
+        try:
+            self.cards_number_display_hint.delete()
+        except AttributeError:
+            pass
 
     def on_mouse_press(self, x, y, button, modifiers):
         """

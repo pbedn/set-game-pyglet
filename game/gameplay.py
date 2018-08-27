@@ -2,7 +2,8 @@ import random
 from pyglet.window import key
 
 from . import (DEBUG, FEATURES_QUICKSTART,
-               RIGHT_HUD_TEXT, LEFT_HUD_TEXT, END_GAME_TEXT, FeatSwitch)
+               RIGHT_HUD_TEXT, LEFT_HUD_TEXT, END_GAME_TEXT, HINT_SETS_COUNT_TEXT,
+               FeatSwitch)
 from .cards import Cards
 from .fsm import State
 from .hud import TextCountable, TextBase
@@ -20,11 +21,13 @@ class GamePlay(State):
 
         # display a two cards hint
         if self.d.keys[key.H] and self.d.cards.get_two_cards_from_random_set():
+            self.remove_text_hint()  # if exists
             for c in self.d.cards.card_clicked:
                 c.scale = self.d.constants.scale_card_unselected
             self.d.cards.card_clicked = []
             
             self.display_hint()
+            self.display_text_hint()
 
         clicked = self.d.cards.card_clicked
         # If player clicked three cards check if they are a set
@@ -49,6 +52,8 @@ class GamePlay(State):
             # display number of cards left on top of window
             self.d.cards_number_display.count = self.d.cards.number_of_cards_left()
 
+            self.remove_text_hint()  # if exists
+
         # end of game when there are no left sets
         if not self.d.cards.check_if_set_exists_in_cards_used():
             self.d.fsm.transition('toEND')
@@ -61,6 +66,21 @@ class GamePlay(State):
         self.d.cards.card_hint2.scale = self.d.constants.scale_card_selected
         self.d.cards.card_hint2.clicked = True
         self.d.cards.card_clicked.append(self.d.cards.card_hint2)
+
+    def display_text_hint(self):
+        """Display number of sets left when hint is requested"""
+        txt = HINT_SETS_COUNT_TEXT.format(self.d.cards.number_of_sets_left)
+        self.d.cards_number_display_hint = TextBase(self.d.width//2+100, self.d.height - 75, txt,
+                                                    batch=self.d.batch)
+        self.d.cards_number_display_hint.anchor_x = 'right'
+        self.d.cards_number_display_hint.font_size -= 5
+
+    def remove_text_hint(self):
+        """Remove silently hint text if exists"""
+        try:
+            self.d.cards_number_display_hint.delete()
+        except AttributeError:
+            pass
 
     def remove_old_card_and_add_new_one(self, c, add_new_cards):
         """

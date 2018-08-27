@@ -15,6 +15,7 @@ FEATURES_NORMAL = 'normal'
 END_GAME_TEXT = "End of the Game"
 RIGHT_HUD_TEXT = "Score: "
 LEFT_HUD_TEXT = "Cards left: "
+HINT_SETS_COUNT_TEXT = "I see {} sets. And you?"
 
 # coordinates [x, y, right: x + width, top: y + height] of card image on viewport
 Box = namedtuple("Box", "x y right top")
