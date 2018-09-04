@@ -19,15 +19,20 @@ class GamePlay(State):
             self.add_new_column()
             self.d.new_column_used = True
 
-        # display a two cards hint
-        if self.d.keys[key.H] and self.d.cards.get_two_cards_from_random_set():
+        two_cards = self.d.cards.get_two_cards_from_random_set()
+
+        # display number of sets visible on board
+        if self.d.keys[key.G] and two_cards:
+            self.remove_text_hint()  # if exists
+            self.display_text_hint()
+
+        # display a two cards from correct set on board
+        if self.d.keys[key.H] and two_cards:
             self.remove_text_hint()  # if exists
             for c in self.d.cards.card_clicked:
                 c.scale = self.d.constants.scale_card_unselected
             self.d.cards.card_clicked = []
-            
             self.display_hint()
-            self.display_text_hint()
 
         clicked = self.d.cards.card_clicked
         # If player clicked three cards check if they are a set
