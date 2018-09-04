@@ -35,9 +35,10 @@ HELP_TEXT = """
         - Normal     (81 cards in game)
         
         Key shortcuts:
-        R   - Restart
-        H   - Display hints
+        R   - Restart game
+        G   - Display hint (number of sets)
+        H   - Display hint (two of three cards from set) 
         N   - Add 5th cards column (currently you can do it only once)
-        F10 - Main Menu
+        F10 - Main menu
         ESC - Exit app
         """

@@ -27,6 +27,21 @@ Scoring: +3 point to set found, -1 for wrong set clicked.
 
 At current state game is finished and playable.
 
+**In-game menu help**
+```
+Game difficulty:
+- Quickstart (27 cards in game)
+- Normal     (81 cards in game)
+
+Key shortcuts:
+R   - Restart game
+G   - Display hint (number of sets)
+H   - Display hint (two of three cards from set) 
+N   - Add 5th cards column (currently you can do it only once)
+F10 - Main menu
+ESC - Exit app
+```
+
 **Features**
 
 * [x] Display number of cards left in unused deck 
