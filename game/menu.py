@@ -6,7 +6,7 @@ from pyglet.window import key
 from .fsm import State
 from . import (MENU_TEXT_FEATURES_QUICKSTART, FEATURES_QUICKSTART, FEATURES_NORMAL,
                MENU_TEXT_FEATURES_NORMAL, MENU_START_GAME_TEXT, MENU_END_GAME_TEXT,
-               DEBUG)
+               DEBUG, HELP_TEXT)
 from .hud import TextBase
 
 
@@ -100,17 +100,9 @@ class TransitionToMenu(State):
 
         self.d.set_feature = FEATURES_QUICKSTART
 
-        help_txt = """
-        Menu Select: Quickstart or Normal
-        Key shortcuts:
-            R   - Restart
-            N   - Add 5th cards column (currently you can do it only once)
-            F10 - Main Menu
-            ESC - Exit app
-        """
         help_menu_item = TextBase(self.d.width // 2,
-                                  self.d.height // 8,
-                                  help_txt,
+                                  self.d.height // 5,
+                                  HELP_TEXT,
                                   batch=self.d.batch,
                                   multiline=True,
                                   width=self.d.width)

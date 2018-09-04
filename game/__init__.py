@@ -27,3 +27,17 @@ class Constants:
     def __init__(self, card_scale):
         self.scale_card_selected = card_scale * 1.2
         self.scale_card_unselected = card_scale
+
+
+HELP_TEXT = """
+        Game difficulty:
+        - Quickstart (27 cards in game)
+        - Normal     (81 cards in game)
+        
+        Key shortcuts:
+        R   - Restart
+        H   - Display hints
+        N   - Add 5th cards column (currently you can do it only once)
+        F10 - Main Menu
+        ESC - Exit app
+        """
