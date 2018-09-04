@@ -88,7 +88,7 @@ class TransitionToMenu(State):
         start_game_menu_item.font_size += 10
         features_menu_item = TextBase(self.d.width // 2,
                                       self.d.height // 2,
-                                      MENU_TEXT_FEATURES_QUICKSTART,
+                                      MENU_TEXT_FEATURES_NORMAL,
                                       batch=self.d.batch)
         end_game_menu_item = TextBase(self.d.width // 2,
                                       self.d.height // 2 - 100,
@@ -98,7 +98,7 @@ class TransitionToMenu(State):
         self.d.current_index = 0
         self.d.current_selection = self.d.menu_items[0]
 
-        self.d.set_feature = FEATURES_QUICKSTART
+        self.d.set_feature = FEATURES_NORMAL
 
         help_menu_item = TextBase(self.d.width // 2,
                                   self.d.height // 5,
