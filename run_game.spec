@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['run_game.py'],
-             pathex=['C:\\github\\sets-game'],
+             pathex=['sets-game'],
              binaries=[],
              datas=[('res/*.png', 'res' )],
              hiddenimports=[],
