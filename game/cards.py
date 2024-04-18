@@ -26,7 +26,7 @@ class Card(pyglet.sprite.Sprite):
 
     def set_position_and_box(self, x, y):
         """Set position of sprite in window and create box variable"""
-        self.position = (x, y)
+        self.position = (x, y, 0)
         self.box = Box(x, y, x+self.width, y+self.height)
 
     def is_in_the_box(self, x, y):
