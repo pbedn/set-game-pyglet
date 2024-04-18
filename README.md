@@ -76,6 +76,18 @@ ESC - Exit app
 
 ---
 
+### Development env
+
+```
+pip install -r requirements.txt
+```
+
+### Run game
+
+```
+python run_game.py
+```
+
 ### Build exe in Windows
 
 ```
