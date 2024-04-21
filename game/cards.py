@@ -65,7 +65,7 @@ class Cards:
         self.card_clicked = []
 
         for i in range(self.cols):
-            self.draw_random(i * 200 + + config.corner_margin.x)
+            self.draw_random(i * 200 + config.corner_margin.x)
 
     def _check_cards_number(self, feat_switch):
         """
@@ -101,6 +101,13 @@ class Cards:
                 break
             self.draw_selected(card, x_offset, 150 * i + config.corner_margin.y)
             self.cards_used.append(card)
+
+    def redraw_columns(self, x_sub):
+        """
+        Draw one column of random cards
+        """
+        for card in self.cards_used:
+            card.update(card.x - x_sub, card.y)
 
     def draw_single_random(self, x, y):
         """Draw single random card at given coordinates"""

@@ -104,7 +104,9 @@ class GamePlay(State):
 
     def add_new_column(self):
         """Draw additional fifth column of three cards at player request"""
-        self.d.cards.draw_random(800 + config.corner_margin.x)
+        subtract_from_x = 100
+        self.d.cards.redraw_columns(subtract_from_x)
+        self.d.cards.draw_random(800 + config.corner_margin.x - subtract_from_x)
 
         # update cards display
         self.d.cards_number_display.count = self.d.cards.number_of_cards_left()
@@ -141,8 +143,6 @@ class TransitionToGame(State):
         self.to_state = to_state
 
     def execute(self):
-        print(__class__.__name__) if DEBUG else None
-
         self.d.delete_all_objects()
         self.d.new_column_used = False
         
@@ -182,8 +182,6 @@ class TransitionToEnd(State):
         self.to_state = to_state
 
     def execute(self):
-        print(__class__.__name__) if DEBUG else None
-
         # remove any leftover cards from screen
         if len(self.d.cards.cards_used) > 0:
             for c in self.d.cards.cards_used:

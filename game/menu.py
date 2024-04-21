@@ -77,7 +77,6 @@ class TransitionToMenu(State):
         self.to_state = to_state
 
     def execute(self):
-        print(__class__.__name__) if DEBUG else None
         self.d.delete_all_objects()
 
         start_game_menu_item = TextBase(self.d.width // 2,
