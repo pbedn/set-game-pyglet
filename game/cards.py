@@ -6,7 +6,7 @@ from pyglet.shapes import Box
 
 from .configuration import config
 from . import FEATURES
-from .resources import select_features
+from .resources import select_features, create_card_sprites
 
 
 class Card(pyglet.sprite.Sprite):
@@ -58,7 +58,8 @@ class Cards:
         self.cols = cols
         self.d = director
 
-        self.cards = select_features(self.d.preloaded, feat_switch)
+        self.preloaded = create_card_sprites(self.d.seq, self.d.constants.scale_card_unselected)
+        self.cards = select_features(self.preloaded, feat_switch)
         self._check_cards_number(feat_switch)
 
         self.cards_used = []

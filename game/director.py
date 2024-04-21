@@ -27,8 +27,7 @@ class GameDirector(pyglet.window.Window):
         card_scale = 0.8
         self.constants = Constants(card_scale=card_scale)
 
-        seq = read_images_from_disk()
-        self.preloaded = create_card_sprites(seq, self.constants.scale_card_unselected)
+        self.seq = read_images_from_disk()
 
         self.keys = key.KeyStateHandler()
         self.push_handlers(self.keys)
