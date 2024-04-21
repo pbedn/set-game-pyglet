@@ -17,10 +17,15 @@ RIGHT_HUD_TEXT = "Score: "
 LEFT_HUD_TEXT = "Cards left: "
 HINT_SETS_COUNT_TEXT = "I see {} sets. And you?"
 
-# coordinates [x, y, right: x + width, top: y + height] of card image on viewport
-Box = namedtuple("Box", "x y right top")
-
 FeatSwitch = namedtuple("FeatSwitch", "pattern number shape color_name")
+
+CORNER_MARGIN = 50
+
+
+class OutlineBox:
+    size = 1
+    thickness = 5
+    color = (67, 137, 194)
 
 
 class Constants:

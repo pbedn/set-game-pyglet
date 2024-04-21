@@ -76,12 +76,12 @@ class GameDirector(pyglet.window.Window):
                 if card.is_in_the_box(x, y):
                     # that card is scaled up and added into clicked list if it was not there before
                     if card not in self.cards.card_clicked:
-                        card.scale = self.constants.scale_card_selected
+                        card.outline_draw(self.batch)
                         self.cards.card_clicked.append(card)
                         print(card) if DEBUG else None
                     else:
-                        card.scale = self.constants.scale_card_unselected
                         self.cards.card_clicked.remove(card)
+                        card.outline_delete()
 
     def on_key_press(self, symbol, modifiers):
         """Global key shortcuts"""

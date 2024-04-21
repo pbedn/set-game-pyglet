@@ -2,10 +2,10 @@ import random
 from itertools import combinations
 
 import pyglet
+from pyglet.shapes import Box
 
-from . import Box, FEATURES
-from .resources import (select_features, create_card_sprites, read_images_from_disk,
-                        create_card_sprites_single_image, read_images_from_disk_single_image)
+from . import FEATURES, CORNER_MARGIN, OutlineBox
+from .resources import select_features
 
 
 class Card(pyglet.sprite.Sprite):
@@ -18,22 +18,27 @@ class Card(pyglet.sprite.Sprite):
         self.shape = card_shape
         self.pattern = card_pattern
         self.number = card_number
-        self.image.anchor_x = self.image.width // 2
-        self.image.anchor_y = self.image.height // 2
-
-        # Coordinates of box at init are out of real window
-        self.box = Box(5000, 5000, 100, 100)
-
-    def set_position_and_box(self, x, y):
-        """Set position of sprite in window and create box variable"""
-        self.position = (x, y, 0)
-        self.box = Box(x, y, x+self.width, y+self.height)
+        self._outline = None
 
     def is_in_the_box(self, x, y):
         """Check if point (x,y) is inside card box (rectangle)"""
-        if self.box.x <= x + self.image.width <= self.box.right \
-                and self.box.y <= y + self.image.height <= self.box.top:
+        if self.x <= x <= self.x + self.width and self.y <= y <= self.y + self.height:
             return True
+
+    def outline_draw(self, batch):
+        self._outline = Box(
+            self.x,
+            self.y,
+            self.width + OutlineBox.size,
+            self.height + OutlineBox.size,
+            thickness=OutlineBox.thickness,
+            color=OutlineBox.color,
+            batch=batch
+        )
+        self._outline.draw()
+
+    def outline_delete(self):
+        self._outline.delete()
 
     def __str__(self):
         return "Card: {}, {}, {}, {}, {}".format(self.color_name, self.shape, self.pattern, self.number, (self.x, self.y, self.width, self.height))
