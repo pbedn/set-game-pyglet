@@ -71,17 +71,7 @@ class GameDirector(pyglet.window.Window):
         but mouse functionality cannot be moved in a way like keys handler
         """
         if button == mouse.LEFT and self.fsm.cur_state == self.fsm.states['GAME']:
-            for card in self.cards.cards_used:
-                # when clicked point (x,y) is inside card box
-                if card.is_in_the_box(x, y):
-                    # that card is scaled up and added into clicked list if it was not there before
-                    if card not in self.cards.card_clicked:
-                        card.outline_draw(self.batch)
-                        self.cards.card_clicked.append(card)
-                        print(card) if DEBUG else None
-                    else:
-                        self.cards.card_clicked.remove(card)
-                        card.outline_delete()
+            self.fsm.states['GAME'].on_mouse_press(x, y, button, modifiers)
 
     def on_key_press(self, symbol, modifiers):
         """Global key shortcuts"""
