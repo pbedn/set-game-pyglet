@@ -3,12 +3,13 @@ How pyglet splits image into a grid ?
 """
 
 import pyglet
+from pyglet.shapes import Box
 
 window = pyglet.window.Window(resizable=True)
 
 batch = pyglet.graphics.Batch()
 
-pyglet.resource.path = ['../res']
+pyglet.resource.path = ['.']
 pyglet.resource.reindex()
 
 
@@ -37,33 +38,30 @@ def create_sprites(seq):
 seq = read_image('new-sets.png', 9, 9, center=True)
 sprites = create_sprites(seq)
 
+s = sprites[0]
+rectangle = Box(s.x, s.y, s.width, s.height, color=(255, 255, 0), batch=batch)
+rectangle.opacity = 128
+rectangle.rotation = 0
+
 
 @window.event
 def on_draw():
     window.clear()
-    sprites[0].x = 50
-    sprites[0].y = 50
-    sprites[0].draw()
-
-    sprites[1].x = 250
-    sprites[1].y = 50
-    sprites[1].draw()
-
-    sprites[9].x = 50
-    sprites[9].y = 200
-    sprites[9].draw()
-
-    sprites[10].x = 250
-    sprites[10].y = 200
-    sprites[10].draw()
-
-    sprites[79].x = 450
-    sprites[79].y = 50
-    sprites[79].draw()
+    rectangle.draw()
 
     sprites[80].x = 450
     sprites[80].y = 200
     sprites[80].draw()
 
+@window.event
+def on_mouse_press(x, y, button, modifiers):
+    if rectangle.x < x < rectangle.x + rectangle.width and rectangle.y < y < rectangle.y + rectangle.width:
+        print(x, y)
+
+@window.event
+def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
+    if rectangle.x < x < rectangle.x + rectangle.width and rectangle.y < y < rectangle.y + rectangle.width:
+        rectangle.x += dx
+        rectangle.y += dy
 
 pyglet.app.run()

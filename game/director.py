@@ -3,27 +3,32 @@ from pyglet.window import key, mouse
 
 from .gameplay import GamePlay, GameEnd, TransitionToGame, TransitionToEnd
 from .menu import GameMenu, TransitionToMenu
-from . import DEBUG, Constants
+from . import Constants, DEBUG
 from .fsm import FSM
+from .resources import read_images_from_disk, create_card_sprites
 
 
 class GameDirector(pyglet.window.Window):
     """
     Game Director managing all actions
     """
-    def __init__(self, new_graphic, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.set_location(50, 50)  # location of upper left window corner
         self.frame_rate = 0.1
         self.batch = pyglet.graphics.Batch()
 
+        cursor = self.get_system_mouse_cursor(self.CURSOR_HAND)
+        self.set_mouse_cursor(cursor)
+
         self.first_run = [True] * 2
         self.new_column_used = False
-        self.single_image_graphic = new_graphic
 
-        card_scale = 2.0 if self.single_image_graphic else 0.6
-
+        card_scale = 0.8
         self.constants = Constants(card_scale=card_scale)
+
+        seq = read_images_from_disk()
+        self.preloaded = create_card_sprites(seq, self.constants.scale_card_unselected)
 
         self.keys = key.KeyStateHandler()
         self.push_handlers(self.keys)

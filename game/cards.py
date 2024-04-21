@@ -36,7 +36,7 @@ class Card(pyglet.sprite.Sprite):
             return True
 
     def __str__(self):
-        return "Card: {}, {}, {}, {}".format(self.color_name, self.shape, self.pattern, self.number)
+        return "Card: {}, {}, {}, {}, {}".format(self.color_name, self.shape, self.pattern, self.number, (self.x, self.y, self.width, self.height))
 
 
 class Cards:
@@ -49,15 +49,7 @@ class Cards:
         self.cols = cols
         self.d = director
 
-        # preload images from disk
-        # TODO: this is slow process (CPU)
-        if self.d.single_image_graphic:
-            seq = read_images_from_disk_single_image('new-sets.png', 9, 9)
-            preloaded = create_card_sprites_single_image(seq, self.d.constants.scale_card_unselected)
-        else:
-            seq = read_images_from_disk()
-            preloaded = create_card_sprites(seq, self.d.constants.scale_card_unselected)
-        self.cards = select_features(preloaded, feat_switch)
+        self.cards = select_features(self.d.preloaded, feat_switch)
         self._check_cards_number(feat_switch)
 
         self.cards_used = []
@@ -84,7 +76,7 @@ class Cards:
 
     def draw_selected(self, card, x, y):
         """Set attributes and add to batch a selected card"""
-        card.set_position_and_box(x, y)
+        card.update(x, y)
         card.batch = self.d.batch
 
     def draw_random(self, x):
@@ -98,7 +90,7 @@ class Cards:
         for i, card in enumerate(cards):
             if i >= self.rows:
                 break
-            self.draw_selected(card, x + 100, 150 * i + 100)
+            self.draw_selected(card, x + CORNER_MARGIN, 150 * i + CORNER_MARGIN)
             self.cards_used.append(card)
 
     def draw_single_random(self, x, y):
