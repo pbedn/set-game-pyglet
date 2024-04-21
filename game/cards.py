@@ -4,7 +4,8 @@ from itertools import combinations
 import pyglet
 from pyglet.shapes import Box
 
-from . import FEATURES, CORNER_MARGIN, OutlineBox
+from .configuration import config
+from . import FEATURES
 from .resources import select_features
 
 
@@ -12,6 +13,7 @@ class Card(pyglet.sprite.Sprite):
     """
     Single Card sprite object
     """
+
     def __init__(self, img, card_color, card_shape, card_pattern, card_number):
         super().__init__(img)
         self.color_name = card_color
@@ -29,10 +31,10 @@ class Card(pyglet.sprite.Sprite):
         self._outline = Box(
             self.x,
             self.y,
-            self.width + OutlineBox.size,
-            self.height + OutlineBox.size,
-            thickness=OutlineBox.thickness,
-            color=OutlineBox.color,
+            self.width + config.outline_box.size,
+            self.height + config.outline_box.size,
+            thickness=config.outline_box.thickness,
+            color=config.outline_box.color,
             batch=batch
         )
         self._outline.draw()
@@ -41,7 +43,8 @@ class Card(pyglet.sprite.Sprite):
         self._outline.delete()
 
     def __str__(self):
-        return "Card: {}, {}, {}, {}, {}".format(self.color_name, self.shape, self.pattern, self.number, (self.x, self.y, self.width, self.height))
+        return "Card: {}, {}, {}, {}, {}".format(self.color_name, self.shape, self.pattern, self.number,
+                                                 (self.x, self.y, self.width, self.height))
 
 
 class Cards:
@@ -49,6 +52,7 @@ class Cards:
     Manager of all cards that are displayed on the screen
     and generated but hidden for the user
     """
+
     def __init__(self, director, rows, cols, feat_switch):
         self.rows = rows
         self.cols = cols
@@ -61,7 +65,7 @@ class Cards:
         self.card_clicked = []
 
         for i in range(self.cols):
-            self.draw_random(i*200)
+            self.draw_random(i * 200 + + config.corner_margin.x)
 
     def _check_cards_number(self, feat_switch):
         """
@@ -84,18 +88,18 @@ class Cards:
         card.update(x, y)
         card.batch = self.d.batch
 
-    def draw_random(self, x):
+    def draw_random(self, x_offset):
         """
         Draw one column of random cards
 
-        :param x: position offset of first drawn card
+        :param x_offset: x position offset of first drawn card
         """
         cards = [c for c in self.cards if c not in self.cards_used]
         random.shuffle(cards)
         for i, card in enumerate(cards):
             if i >= self.rows:
                 break
-            self.draw_selected(card, x + CORNER_MARGIN, 150 * i + CORNER_MARGIN)
+            self.draw_selected(card, x_offset, 150 * i + config.corner_margin.y)
             self.cards_used.append(card)
 
     def draw_single_random(self, x, y):

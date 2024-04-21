@@ -3,7 +3,7 @@ from pyglet.window import key, mouse
 
 from .gameplay import GamePlay, GameEnd, TransitionToGame, TransitionToEnd
 from .menu import GameMenu, TransitionToMenu
-from . import Constants, DEBUG
+from . import Constants
 from .fsm import FSM
 from .resources import read_images_from_disk, create_card_sprites
 

@@ -1,6 +1,7 @@
 import random
 from pyglet.window import key
 
+from .configuration import config
 from . import (DEBUG, FEATURES_QUICKSTART,
                RIGHT_HUD_TEXT, LEFT_HUD_TEXT, END_GAME_TEXT, HINT_SETS_COUNT_TEXT,
                FeatSwitch)
@@ -103,7 +104,7 @@ class GamePlay(State):
 
     def add_new_column(self):
         """Draw additional fifth column of three cards at player request"""
-        self.d.cards.draw_random(800)
+        self.d.cards.draw_random(800 + config.corner_margin.x)
 
         # update cards display
         self.d.cards_number_display.count = self.d.cards.number_of_cards_left()

@@ -19,14 +19,6 @@ HINT_SETS_COUNT_TEXT = "I see {} sets. And you?"
 
 FeatSwitch = namedtuple("FeatSwitch", "pattern number shape color_name")
 
-CORNER_MARGIN = 50
-
-
-class OutlineBox:
-    size = 1
-    thickness = 5
-    color = (67, 137, 194)
-
 
 class Constants:
     def __init__(self, card_scale):
