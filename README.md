@@ -21,7 +21,7 @@ In the beginning of game player see 12 cards. Goal is to find all sets.
 If there are no any sets visible, player can request three more cards, 
 with total of 15.
 
-Scoring: +3 point to set found, -1 for wrong set clicked.
+Scoring: +1 point to set found, -1 for wrong set clicked.
 
 ### Python implementation  
 
@@ -29,33 +29,29 @@ At current state game is finished and playable.
 
 **In-game menu help**
 ```
-Game difficulty:
-- Quickstart (27 cards in game)
-- Normal     (81 cards in game)
+  Game mode:
+  Quickstart - 27 cards in game (3 features)
+  Normal - 81 cards in game (4 features)
 
-Key shortcuts:
-R   - Restart game
-G   - Display hint (number of sets)
-H   - Display hint (two of three cards from set) 
-N   - Add 5th cards column (currently you can do it only once)
-F10 - Main menu
-ESC - Exit app
+  Scoring:
+  +1 point if found set is valid
+  -1 point if found set is invalid
+
+  Key shortcuts:
+  G   - Display hint - number of sets
+  H   - Display hint - two of three cards from set) 
+  N   - Add 5th cards column (can be done only once)
+  R   - Restart game
+  F10 - Main menu
+  ESC - Exit app
 ```
 
 **Features**
 
-* [x] Display number of cards left in unused deck 
-* [x] Replace old cards with fresh from unused deck when user finds correct set
-* [x] Display menu in the beginning with features choice option (quickstart and complete option)
-* [x] Add penalty for clicking wrong cards that will decrease score
-* [x] Display end game screen
-* [x] Implement Finite State Machine for three game states (menu, game, end) and transitions between them
-* [x] Hints: Add H key to automatically show two out of three cards from random set
-* [x] Add restart capability
-    * Return to game
-    * Return to menu
-* [x] Draw additional fifth column at player request
-* [x] Added second graphics to the game, old graphics can be chosen by running with --old-graphic parameter
+* [Game] Normal and quickstart mode
+* [Game] Hints: Add H key to automatically show two out of three cards from random set
+* [Tech] Finite State Machine for three game states (menu, game, end) and transitions between them
+* [Tech] Full mouse support
 
 
 *Game Menu*
@@ -70,13 +66,12 @@ ESC - Exit app
 
 <img src="docs/game_normal_fifth_column.png" width="400" height="245" />
 
-*Normal Mode with 5th column - New Graphics*
-
-<img src="docs/game_normal_fifth_column-new-graphics.png" width="400" height="245" />
 
 ---
 
 ### Development env
+
+Python version: 3.11
 
 ```
 pip install -r requirements.txt
@@ -92,7 +87,7 @@ python run_game.py
 
 ```
 pip install pyinstaller
-pyinstaller -cF run_game.spec
+pyinstaller .\run_game.spec
 ```
 
 
