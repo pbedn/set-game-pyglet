@@ -1,3 +1,4 @@
+import itertools
 import random
 from itertools import combinations
 
@@ -5,8 +6,7 @@ import pyglet
 from pyglet.shapes import Box
 
 from .configuration import config
-from . import FEATURES
-from .resources import select_features, create_card_sprites
+from .constants import FEATURES, PATTERNS, SHAPES, COLORS, NUMBERS
 
 
 class Card(pyglet.sprite.Sprite):
@@ -158,3 +158,50 @@ class Cards:
         """Number of cards that are not draw on the screen"""
         num = len(self.cards) - len(self.cards_used)
         return num if num >= 0 else 0
+
+
+def select_features(cards, switch):
+    """
+    Remove selected feature from total cards list
+
+    :param cards: list if cards image sprites
+    :param switch: namedtuple with boolean features
+    :return: List of cards after removal selected feature
+    """
+    new_cards = [i for i in cards]
+
+    def remove_cards(attribute, features, lst):
+        if not getattr(switch, attribute):
+            single_feat = random.choice(features)
+            for card in cards:
+                if getattr(card, attribute) != single_feat:
+                    try:
+                        lst.remove(card)
+                    except ValueError:
+                        pass
+
+    for k, v in FEATURES.items():
+        remove_cards(k, v, new_cards)
+
+    return new_cards
+
+
+def create_card_sprites(seq, scale):
+    """
+    Iterate through image sequence and create card sprites
+
+    :return: List containing all cards read from image resources
+    """
+    card_list = []
+    card_seq = iter(seq)
+    for pattern, shape, color, number in itertools.product(PATTERNS, SHAPES, COLORS, NUMBERS):
+        card_sprite = Card(
+            img=card_seq.__next__(),
+            card_color=color,
+            card_shape=shape,
+            card_number=number,
+            card_pattern=pattern
+        )
+        card_sprite.scale = scale
+        card_list.append(card_sprite)
+    return card_list

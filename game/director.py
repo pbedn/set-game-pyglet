@@ -3,7 +3,7 @@ from pyglet.window import key, mouse
 
 from .gameplay import GamePlay, GameEnd, TransitionToGame, TransitionToEnd
 from .menu import GameMenu, TransitionToMenu
-from . import Constants
+from .constants import Constants
 from .fsm import FSM
 from .resources import read_images_from_disk
 
@@ -80,6 +80,8 @@ class GameDirector(pyglet.window.Window):
         """Global mouse press"""
         if button == mouse.LEFT and self.fsm.cur_state == self.fsm.states['GAME']:
             self.fsm.states['GAME'].on_mouse_press(x, y, button, modifiers)
+        elif button == mouse.LEFT and self.fsm.cur_state == self.fsm.states['END']:
+            self.fsm.states['END'].on_mouse_press(x, y, button, modifiers)
         elif button == mouse.LEFT and self.fsm.cur_state == self.fsm.states['MENU']:
             self.fsm.states['MENU'].on_mouse_press(x, y, button, modifiers)
 

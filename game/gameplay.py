@@ -5,9 +5,7 @@ from pyglet.shapes import Box
 from pyglet.window import key
 
 from .configuration import config
-from . import (DEBUG, FEATURES_QUICKSTART,
-               RIGHT_HUD_TEXT, LEFT_HUD_TEXT, END_GAME_TEXT, HINT_SETS_COUNT_TEXT,
-               FeatSwitch)
+from .constants import *
 from .cards import Cards
 from .fsm import State
 from .hud import TextCountable, TextBase
@@ -42,7 +40,6 @@ class GamePlay(State):
         # If player clicked three cards check if they are a set
         if len(clicked) == 3:
             if self.d.cards.check_if_cards_are_set(clicked):
-                print(">>>> Found a set!") if DEBUG else None
                 self.d.score.count += 1
 
                 # reset deck to 12 cards if 15 were in the game
@@ -122,7 +119,6 @@ class GamePlay(State):
                 if card not in self.d.cards.card_clicked:
                     card.outline_draw(self.d.batch, self.d.foreground)
                     self.d.cards.card_clicked.append(card)
-                    print(card) if DEBUG else None
                 else:
                     self.d.cards.card_clicked.remove(card)
                     card.outline_delete()
@@ -143,6 +139,10 @@ class GameEnd(State):
         if self.d.keys[key.R]:
             self.d.fsm.transition('toGAME')
         if self.d.keys[key.F10]:
+            self.d.fsm.transition('toMENU')
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        if self.d.is_in_the_box(self.d.menu_box, x, y):
             self.d.fsm.transition('toMENU')
 
 

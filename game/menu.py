@@ -6,9 +6,7 @@ from pyglet.shapes import Box
 
 from .configuration import config
 from .fsm import State
-from . import (MENU_TEXT_FEATURES_QUICKSTART, FEATURES_QUICKSTART, FEATURES_NORMAL,
-               MENU_TEXT_FEATURES_NORMAL, MENU_START_GAME_TEXT, MENU_END_GAME_TEXT,
-               HELP_TEXT, HELP_TEXT_2)
+from .constants import *
 from .hud import TextBase
 
 
