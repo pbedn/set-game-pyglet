@@ -1,4 +1,7 @@
 import random
+
+from pyglet.shapes import Box
+
 from pyglet.window import key
 
 from .configuration import config
@@ -92,7 +95,7 @@ class GamePlay(State):
     def remove_old_card_and_add_new_one(self, c, add_new_cards):
         """
         First remove card from cards list and its sprite
-        next add new one in the same place
+        next add new in the same place
         """
         old_x, old_y = c.x, c.y
         self.d.cards.cards_used.remove(c)
@@ -112,27 +115,25 @@ class GamePlay(State):
         self.d.cards_number_display.count = self.d.cards.number_of_cards_left()
 
     def on_mouse_press(self, x, y, button, modifiers):
-        """
-        This method should be inside GamePlay
-        but mouse functionality cannot be moved in a way like keys handler
-        """
         for card in self.d.cards.cards_used:
             # when clicked point (x,y) is inside card box
-            if card.is_in_the_box(x, y):
+            if self.d.is_in_the_box(card, x, y):
                 # that card is scaled up and added into clicked list if it was not there before
                 if card not in self.d.cards.card_clicked:
-                    card.outline_draw(self.d.batch)
+                    card.outline_draw(self.d.batch, self.d.foreground)
                     self.d.cards.card_clicked.append(card)
                     print(card) if DEBUG else None
                 else:
                     self.d.cards.card_clicked.remove(card)
                     card.outline_delete()
+        if self.d.is_in_the_box(self.d.menu_box, x, y):
+            self.d.fsm.transition('toMENU')
 
     def on_mouse_motion(self, x, y):
         cursor = self.d.get_system_mouse_cursor(self.d.CURSOR_DEFAULT)
         self.d.set_mouse_cursor(cursor)
         for card in self.d.cards.cards_used:
-            if card.is_in_the_box(x, y):
+            if self.d.is_in_the_box(card, x, y):
                 cursor = self.d.get_system_mouse_cursor(self.d.CURSOR_HAND)
                 self.d.set_mouse_cursor(cursor)
 
@@ -153,7 +154,7 @@ class TransitionToGame(State):
     def execute(self):
         self.d.delete_all_objects()
         self.d.new_column_used = False
-        
+
         # randomly select features for the game after user menu choice
         # quickstart game (one feature is False) - 27 cards in game
         # normal game - 81 cards in game
@@ -187,13 +188,13 @@ class TransitionToGame(State):
         self.d.menu_btn = TextBase(
             60, self.d.height - 20,
             "Menu".format(self.d.set_feature),
-            batch=self.d.batch)
+            batch=self.d.batch, group=self.d.foreground)
         self.d.menu_btn.font_size -= 10
         self.d.menu_box = Box(
             0, self.d.height - 45, 120, 45,
             thickness=1,
             color=config.outline_box.color,
-            batch=self.d.batch
+            batch=self.d.batch, group=self.d.foreground
         )
 
         self.d.fsm.set_state('GAME')

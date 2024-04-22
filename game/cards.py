@@ -22,12 +22,7 @@ class Card(pyglet.sprite.Sprite):
         self.number = card_number
         self._outline = None
 
-    def is_in_the_box(self, x, y):
-        """Check if point (x,y) is inside card box (rectangle)"""
-        if self.x <= x <= self.x + self.width and self.y <= y <= self.y + self.height:
-            return True
-
-    def outline_draw(self, batch):
+    def outline_draw(self, batch, group):
         self._outline = Box(
             self.x,
             self.y,
@@ -35,7 +30,8 @@ class Card(pyglet.sprite.Sprite):
             self.height + config.outline_box.size,
             thickness=config.outline_box.thickness,
             color=config.outline_box.color,
-            batch=batch
+            batch=batch,
+            group=group
         )
         self._outline.draw()
 

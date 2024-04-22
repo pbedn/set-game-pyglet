@@ -84,11 +84,6 @@ class GameMenu(State):
         # self.exit_box.visible = False
         self.exit_box.draw()
 
-    @staticmethod
-    def is_in_the_box(box, x, y):
-        if box.x <= x <= box.x + box.width and box.y <= y <= box.y + box.height:
-            return True
-
     def execute(self):
         self.menu_boxes(self.d.batch)
         if self.d.keys[key.DOWN] and self.d.current_index < 2:
@@ -113,16 +108,16 @@ class GameMenu(State):
                 pyglet.app.exit()
 
     def on_mouse_press(self, x, y, button, modifiers):
-        if self.is_in_the_box(self.start_box, x, y):
+        if self.d.is_in_the_box(self.start_box, x, y):
             self.start_game()
-        elif self.is_in_the_box(self.option_box, x, y):
+        elif self.d.is_in_the_box(self.option_box, x, y):
             if self.d.current_selection.text == MENU_TEXT_FEATURES_QUICKSTART:
                 self.d.set_feature = FEATURES_NORMAL
                 self.d.current_selection.text = MENU_TEXT_FEATURES_NORMAL
             else:
                 self.d.set_feature = FEATURES_QUICKSTART
                 self.d.current_selection.text = MENU_TEXT_FEATURES_QUICKSTART
-        elif self.is_in_the_box(self.exit_box, x, y):
+        elif self.d.is_in_the_box(self.exit_box, x, y):
             pyglet.app.exit()
 
     @_formatter
@@ -130,11 +125,11 @@ class GameMenu(State):
         self.d.current_index = i
 
     def on_mouse_motion(self, x, y):
-        if self.is_in_the_box(self.start_box, x, y):
+        if self.d.is_in_the_box(self.start_box, x, y):
             self.select_index(0)
-        elif self.is_in_the_box(self.option_box, x, y):
+        elif self.d.is_in_the_box(self.option_box, x, y):
             self.select_index(1)
-        elif self.is_in_the_box(self.exit_box, x, y):
+        elif self.d.is_in_the_box(self.exit_box, x, y):
             self.select_index(2)
 
 

@@ -5,7 +5,7 @@ from .gameplay import GamePlay, GameEnd, TransitionToGame, TransitionToEnd
 from .menu import GameMenu, TransitionToMenu
 from . import Constants
 from .fsm import FSM
-from .resources import read_images_from_disk, create_card_sprites
+from .resources import read_images_from_disk
 
 
 class GameDirector(pyglet.window.Window):
@@ -17,6 +17,8 @@ class GameDirector(pyglet.window.Window):
         self.set_location(50, 50)  # location of upper left window corner
         self.frame_rate = 0.1
         self.batch = pyglet.graphics.Batch()
+        self.background = pyglet.graphics.Group(order=0)
+        self.foreground = pyglet.graphics.Group(order=1)
 
         cursor = self.get_system_mouse_cursor(self.CURSOR_DEFAULT)
         self.set_mouse_cursor(cursor)
@@ -64,19 +66,28 @@ class GameDirector(pyglet.window.Window):
         except AttributeError:
             pass
         self.logo.delete()
+        # todo: global objects aggregator then loop over it would be better
+        # group ?
+        self.menu_box.delete()
+        self.menu_btn.delete()
+
+    @staticmethod
+    def is_in_the_box(box, x, y):
+        if box.x <= x <= box.x + box.width and box.y <= y <= box.y + box.height:
+            return True
 
     def on_mouse_press(self, x, y, button, modifiers):
         """Global mouse press"""
         if button == mouse.LEFT and self.fsm.cur_state == self.fsm.states['GAME']:
             self.fsm.states['GAME'].on_mouse_press(x, y, button, modifiers)
-        if button == mouse.LEFT and self.fsm.cur_state == self.fsm.states['MENU']:
+        elif button == mouse.LEFT and self.fsm.cur_state == self.fsm.states['MENU']:
             self.fsm.states['MENU'].on_mouse_press(x, y, button, modifiers)
 
     def on_mouse_motion(self, x, y, dx, dy):
         """Global mouse motion"""
         if self.fsm.cur_state == self.fsm.states['GAME']:
             self.fsm.states['GAME'].on_mouse_motion(x, y)
-        if self.fsm.cur_state == self.fsm.states['MENU']:
+        elif self.fsm.cur_state == self.fsm.states['MENU']:
             self.fsm.states['MENU'].on_mouse_motion(x, y)
 
     def on_key_press(self, symbol, modifiers):
