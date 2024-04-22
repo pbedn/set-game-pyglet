@@ -43,7 +43,7 @@ class GamePlay(State):
         if len(clicked) == 3:
             if self.d.cards.check_if_cards_are_set(clicked):
                 print(">>>> Found a set!") if DEBUG else None
-                self.d.score.count += 3
+                self.d.score.count += 1
 
                 # reset deck to 12 cards if 15 were in the game
                 add_new_cards = False if len(self.d.cards.cards_used) == 15 else True
@@ -70,10 +70,10 @@ class GamePlay(State):
 
     def display_hint(self):
         """Select and scale up two cards"""
-        self.d.cards.card_hint1.outline_draw(self.d.batch)
+        self.d.cards.card_hint1.outline_draw(self.d.batch, self.d.foreground)
         self.d.cards.card_hint1.clicked = True
         self.d.cards.card_clicked.append(self.d.cards.card_hint1)
-        self.d.cards.card_hint2.outline_draw(self.d.batch)
+        self.d.cards.card_hint2.outline_draw(self.d.batch, self.d.foreground)
         self.d.cards.card_hint2.clicked = True
         self.d.cards.card_clicked.append(self.d.cards.card_hint2)
 

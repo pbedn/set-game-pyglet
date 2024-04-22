@@ -27,15 +27,21 @@ class Constants:
 
 
 HELP_TEXT = """
-        Game difficulty:
-        - Quickstart (27 cards in game)
-        - Normal     (81 cards in game)
+        Game mode:
+        Quickstart - 27 cards in game (3 features)
+        Normal - 81 cards in game (4 features)
         
+        Scoring:
+        +1 point if found set is valid
+        -1 point if found set is invalid
+        """
+
+HELP_TEXT_2 = """
         Key shortcuts:
+        G   - Display hint - number of sets
+        H   - Display hint - two of three cards from set) 
+        N   - Add 5th cards column (can be done only once)
         R   - Restart game
-        G   - Display hint (number of sets)
-        H   - Display hint (two of three cards from set) 
-        N   - Add 5th cards column (currently you can do it only once)
         F10 - Main menu
         ESC - Exit app
         """

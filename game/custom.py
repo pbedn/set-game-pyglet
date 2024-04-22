@@ -5,5 +5,13 @@ class Pixel(int):
     pass
 
 
-class RGBA(Tuple[int, int, int, int]):
+class RGB(Tuple[int, int, int, int | None]):
+    pass
+
+
+class RGB01(Tuple[int, int, int, int | None]):
+    pass
+
+
+class HEX(str):
     pass

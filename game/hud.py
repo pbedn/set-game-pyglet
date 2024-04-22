@@ -1,5 +1,7 @@
 import pyglet
 
+from .configuration import config
+
 
 class TextBase(pyglet.text.Label):
     """
@@ -9,6 +11,7 @@ class TextBase(pyglet.text.Label):
         super().__init__(*args, **kwargs)
         self.font_name = 'Arial'
         self.font_size = 30
+        self.color = config.font_color.rgb
         self.anchor_x = 'center'
         self.anchor_y = 'center'
         self.batch = batch
