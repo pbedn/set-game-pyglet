@@ -77,7 +77,7 @@ class GamePlay(State):
     def display_text_hint(self):
         """Display number of sets left when hint is requested"""
         txt = HINT_SETS_COUNT_TEXT.format(self.d.cards.number_of_sets_left)
-        self.d.cards_number_display_hint = TextBase(self.d.width//2+100, self.d.height - 75, txt,
+        self.d.cards_number_display_hint = TextBase(self.d.width // 2 + 100, self.d.height - 75, txt,
                                                     batch=self.d.batch)
         self.d.cards_number_display_hint.anchor_x = 'right'
         self.d.cards_number_display_hint.font_size -= 5
@@ -170,16 +170,31 @@ class TransitionToGame(State):
                                      self.d.height - 20,
                                      RIGHT_HUD_TEXT,
                                      batch=self.d.batch)
+        self.d.score.font_size -= 10
         self.d.score.count = 0
         self.d.cards_number_display = TextCountable(self.d.width - 450,
                                                     self.d.height - 20,
                                                     LEFT_HUD_TEXT,
                                                     batch=self.d.batch)
+        self.d.cards_number_display.font_size -= 10
         self.d.cards_number_display.count = self.d.cards.number_of_cards_left()
-        self.d.logo = TextBase(180,
-                               self.d.height - 20,
-                               "Mode: {}".format(self.d.set_feature),
-                               batch=self.d.batch)
+        self.d.logo = TextBase(
+            260, self.d.height - 20,
+            "Mode: {}".format(self.d.set_feature), font_size=20, align='left',
+            batch=self.d.batch)
+        self.d.logo.font_size -= 10
+
+        self.d.menu_btn = TextBase(
+            60, self.d.height - 20,
+            "Menu".format(self.d.set_feature),
+            batch=self.d.batch)
+        self.d.menu_btn.font_size -= 10
+        self.d.menu_box = Box(
+            0, self.d.height - 45, 120, 45,
+            thickness=1,
+            color=config.outline_box.color,
+            batch=self.d.batch
+        )
 
         self.d.fsm.set_state('GAME')
 

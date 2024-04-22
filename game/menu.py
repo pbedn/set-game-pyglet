@@ -18,11 +18,11 @@ def _formatter(func):
     @wraps(func)
     def wrapper(self, *args, **kwargs):
         self.d.current_selection.bold = False
-        self.d.current_selection.font_size -= 10
+        self.d.current_selection.font_size -= 3
         func(self, *args, **kwargs)
         self.d.current_selection = self.d.menu_items[self.d.current_index]
         self.d.current_selection.bold = True
-        self.d.current_selection.font_size += 10
+        self.d.current_selection.font_size += 3
 
     return wrapper
 
@@ -60,8 +60,7 @@ class GameMenu(State):
 
     def menu_boxes(self, batch):
         self.start_box = Box(
-            300, 350, 450 + config.outline_box.size,
-            85 + config.outline_box.size,
+            285, 350, 460,85,
             thickness=1,
             color=config.outline_box.color,
             batch=batch
@@ -69,8 +68,7 @@ class GameMenu(State):
         # self.start_box.visible = False
         self.start_box.draw()
         self.option_box = Box(
-            300, 250, 450 + config.outline_box.size,
-            85 + config.outline_box.size,
+            285, 250, 460,85,
             thickness=1,
             color=config.outline_box.color,
             batch=batch
@@ -78,8 +76,7 @@ class GameMenu(State):
         # self.option_box.visible = False
         self.option_box.draw()
         self.exit_box = Box(
-            300, 150, 450 + config.outline_box.size,
-            85 + config.outline_box.size,
+            285, 150, 460, 85,
             thickness=1,
             color=config.outline_box.color,
             batch=batch
