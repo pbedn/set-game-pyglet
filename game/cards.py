@@ -107,6 +107,7 @@ class Cards:
         Draw one column of random cards
         """
         for card in self.cards_used:
+            card.outline_delete()
             card.update(card.x - x_sub, card.y)
 
     def draw_single_random(self, x, y):
