@@ -3,27 +3,33 @@ from pyglet.window import key, mouse
 
 from .gameplay import GamePlay, GameEnd, TransitionToGame, TransitionToEnd
 from .menu import GameMenu, TransitionToMenu
-from . import DEBUG, Constants
+from .constants import Constants
 from .fsm import FSM
+from .resources import read_images_from_disk
 
 
 class GameDirector(pyglet.window.Window):
     """
     Game Director managing all actions
     """
-    def __init__(self, new_graphic, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.set_location(50, 50)  # location of upper left window corner
         self.frame_rate = 0.1
         self.batch = pyglet.graphics.Batch()
+        self.background = pyglet.graphics.Group(order=0)
+        self.foreground = pyglet.graphics.Group(order=1)
+
+        cursor = self.get_system_mouse_cursor(self.CURSOR_DEFAULT)
+        self.set_mouse_cursor(cursor)
 
         self.first_run = [True] * 2
         self.new_column_used = False
-        self.single_image_graphic = new_graphic
 
-        card_scale = 2.0 if self.single_image_graphic else 0.6
-
+        card_scale = 0.8
         self.constants = Constants(card_scale=card_scale)
+
+        self.seq = read_images_from_disk()
 
         self.keys = key.KeyStateHandler()
         self.push_handlers(self.keys)
@@ -46,6 +52,7 @@ class GameDirector(pyglet.window.Window):
             return
         if len(self.cards.cards_used) > 0:
             for c in self.cards.cards_used:
+                c.outline_delete()
                 c.delete()
             self.cards.cards_used = []
         self.score.delete()
@@ -59,24 +66,31 @@ class GameDirector(pyglet.window.Window):
         except AttributeError:
             pass
         self.logo.delete()
+        # todo: global objects aggregator then loop over it would be better
+        # group ?
+        self.menu_box.delete()
+        self.menu_btn.delete()
+
+    @staticmethod
+    def is_in_the_box(box, x, y):
+        if box.x <= x <= box.x + box.width and box.y <= y <= box.y + box.height:
+            return True
 
     def on_mouse_press(self, x, y, button, modifiers):
-        """
-        This method should be inside GamePlay
-        but mouse functionality cannot be moved in a way like keys handler
-        """
+        """Global mouse press"""
         if button == mouse.LEFT and self.fsm.cur_state == self.fsm.states['GAME']:
-            for card in self.cards.cards_used:
-                # when clicked point (x,y) is inside card box
-                if card.is_in_the_box(x, y):
-                    # that card is scaled up and added into clicked list if it was not there before
-                    if card not in self.cards.card_clicked:
-                        card.scale = self.constants.scale_card_selected
-                        self.cards.card_clicked.append(card)
-                        print(card) if DEBUG else None
-                    else:
-                        card.scale = self.constants.scale_card_unselected
-                        self.cards.card_clicked.remove(card)
+            self.fsm.states['GAME'].on_mouse_press(x, y, button, modifiers)
+        elif button == mouse.LEFT and self.fsm.cur_state == self.fsm.states['END']:
+            self.fsm.states['END'].on_mouse_press(x, y, button, modifiers)
+        elif button == mouse.LEFT and self.fsm.cur_state == self.fsm.states['MENU']:
+            self.fsm.states['MENU'].on_mouse_press(x, y, button, modifiers)
+
+    def on_mouse_motion(self, x, y, dx, dy):
+        """Global mouse motion"""
+        if self.fsm.cur_state == self.fsm.states['GAME']:
+            self.fsm.states['GAME'].on_mouse_motion(x, y)
+        elif self.fsm.cur_state == self.fsm.states['MENU']:
+            self.fsm.states['MENU'].on_mouse_motion(x, y)
 
     def on_key_press(self, symbol, modifiers):
         """Global key shortcuts"""

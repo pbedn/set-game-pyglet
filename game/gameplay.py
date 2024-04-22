@@ -1,9 +1,11 @@
 import random
+
+from pyglet.shapes import Box
+
 from pyglet.window import key
 
-from . import (DEBUG, FEATURES_QUICKSTART,
-               RIGHT_HUD_TEXT, LEFT_HUD_TEXT, END_GAME_TEXT, HINT_SETS_COUNT_TEXT,
-               FeatSwitch)
+from .configuration import config
+from .constants import *
 from .cards import Cards
 from .fsm import State
 from .hud import TextCountable, TextBase
@@ -26,11 +28,11 @@ class GamePlay(State):
             self.remove_text_hint()  # if exists
             self.display_text_hint()
 
-        # display a two cards from correct set on board
+        # display two cards from correct set on board
         if self.d.keys[key.H] and two_cards:
             self.remove_text_hint()  # if exists
             for c in self.d.cards.card_clicked:
-                c.scale = self.d.constants.scale_card_unselected
+                c.outline_delete()
             self.d.cards.card_clicked = []
             self.display_hint()
 
@@ -38,19 +40,19 @@ class GamePlay(State):
         # If player clicked three cards check if they are a set
         if len(clicked) == 3:
             if self.d.cards.check_if_cards_are_set(clicked):
-                print(">>>> Found a set!") if DEBUG else None
-                self.d.score.count += 3
+                self.d.score.count += 1
 
                 # reset deck to 12 cards if 15 were in the game
                 add_new_cards = False if len(self.d.cards.cards_used) == 15 else True
 
                 for c in clicked:
+                    c.outline_delete()
                     self.remove_old_card_and_add_new_one(c, add_new_cards)
             else:
                 # un-select them, and decrease score
                 self.d.score.count = self.d.score.count - 1 if self.d.score.count > 0 else 0
                 for c in self.d.cards.card_clicked:
-                    c.scale = self.d.constants.scale_card_unselected
+                    c.outline_delete()
 
             self.d.cards.card_clicked = []
 
@@ -65,17 +67,17 @@ class GamePlay(State):
 
     def display_hint(self):
         """Select and scale up two cards"""
-        self.d.cards.card_hint1.scale = self.d.constants.scale_card_selected
+        self.d.cards.card_hint1.outline_draw(self.d.batch, self.d.foreground)
         self.d.cards.card_hint1.clicked = True
         self.d.cards.card_clicked.append(self.d.cards.card_hint1)
-        self.d.cards.card_hint2.scale = self.d.constants.scale_card_selected
+        self.d.cards.card_hint2.outline_draw(self.d.batch, self.d.foreground)
         self.d.cards.card_hint2.clicked = True
         self.d.cards.card_clicked.append(self.d.cards.card_hint2)
 
     def display_text_hint(self):
         """Display number of sets left when hint is requested"""
         txt = HINT_SETS_COUNT_TEXT.format(self.d.cards.number_of_sets_left)
-        self.d.cards_number_display_hint = TextBase(self.d.width//2+100, self.d.height - 75, txt,
+        self.d.cards_number_display_hint = TextBase(self.d.width // 2 + 100, self.d.height - 75, txt,
                                                     batch=self.d.batch)
         self.d.cards_number_display_hint.anchor_x = 'right'
         self.d.cards_number_display_hint.font_size -= 5
@@ -90,7 +92,7 @@ class GamePlay(State):
     def remove_old_card_and_add_new_one(self, c, add_new_cards):
         """
         First remove card from cards list and its sprite
-        next add new one in the same place
+        next add new in the same place
         """
         old_x, old_y = c.x, c.y
         self.d.cards.cards_used.remove(c)
@@ -102,10 +104,34 @@ class GamePlay(State):
 
     def add_new_column(self):
         """Draw additional fifth column of three cards at player request"""
-        self.d.cards.draw_random(800)
+        subtract_from_x = 100
+        self.d.cards.redraw_columns(subtract_from_x)
+        self.d.cards.draw_random(800 + config.corner_margin.x - subtract_from_x)
 
         # update cards display
         self.d.cards_number_display.count = self.d.cards.number_of_cards_left()
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        for card in self.d.cards.cards_used:
+            # when clicked point (x,y) is inside card box
+            if self.d.is_in_the_box(card, x, y):
+                # that card is scaled up and added into clicked list if it was not there before
+                if card not in self.d.cards.card_clicked:
+                    card.outline_draw(self.d.batch, self.d.foreground)
+                    self.d.cards.card_clicked.append(card)
+                else:
+                    self.d.cards.card_clicked.remove(card)
+                    card.outline_delete()
+        if self.d.is_in_the_box(self.d.menu_box, x, y):
+            self.d.fsm.transition('toMENU')
+
+    def on_mouse_motion(self, x, y):
+        cursor = self.d.get_system_mouse_cursor(self.d.CURSOR_DEFAULT)
+        self.d.set_mouse_cursor(cursor)
+        for card in self.d.cards.cards_used:
+            if self.d.is_in_the_box(card, x, y):
+                cursor = self.d.get_system_mouse_cursor(self.d.CURSOR_HAND)
+                self.d.set_mouse_cursor(cursor)
 
 
 class GameEnd(State):
@@ -115,6 +141,10 @@ class GameEnd(State):
         if self.d.keys[key.F10]:
             self.d.fsm.transition('toMENU')
 
+    def on_mouse_press(self, x, y, button, modifiers):
+        if self.d.is_in_the_box(self.d.menu_box, x, y):
+            self.d.fsm.transition('toMENU')
+
 
 class TransitionToGame(State):
     def __init__(self, to_state, *args):
@@ -122,11 +152,9 @@ class TransitionToGame(State):
         self.to_state = to_state
 
     def execute(self):
-        print(__class__.__name__) if DEBUG else None
-
         self.d.delete_all_objects()
         self.d.new_column_used = False
-        
+
         # randomly select features for the game after user menu choice
         # quickstart game (one feature is False) - 27 cards in game
         # normal game - 81 cards in game
@@ -143,16 +171,31 @@ class TransitionToGame(State):
                                      self.d.height - 20,
                                      RIGHT_HUD_TEXT,
                                      batch=self.d.batch)
+        self.d.score.font_size -= 10
         self.d.score.count = 0
         self.d.cards_number_display = TextCountable(self.d.width - 450,
                                                     self.d.height - 20,
                                                     LEFT_HUD_TEXT,
                                                     batch=self.d.batch)
+        self.d.cards_number_display.font_size -= 10
         self.d.cards_number_display.count = self.d.cards.number_of_cards_left()
-        self.d.logo = TextBase(180,
-                               self.d.height - 20,
-                               "Mode: {}".format(self.d.set_feature),
-                               batch=self.d.batch)
+        self.d.logo = TextBase(
+            260, self.d.height - 20,
+            "Mode: {}".format(self.d.set_feature), font_size=20, align='left',
+            batch=self.d.batch)
+        self.d.logo.font_size -= 10
+
+        self.d.menu_btn = TextBase(
+            60, self.d.height - 20,
+            "Menu".format(self.d.set_feature),
+            batch=self.d.batch, group=self.d.foreground)
+        self.d.menu_btn.font_size -= 10
+        self.d.menu_box = Box(
+            0, self.d.height - 45, 120, 45,
+            thickness=1,
+            color=config.outline_box.color,
+            batch=self.d.batch, group=self.d.foreground
+        )
 
         self.d.fsm.set_state('GAME')
 
@@ -163,8 +206,6 @@ class TransitionToEnd(State):
         self.to_state = to_state
 
     def execute(self):
-        print(__class__.__name__) if DEBUG else None
-
         # remove any leftover cards from screen
         if len(self.d.cards.cards_used) > 0:
             for c in self.d.cards.cards_used:

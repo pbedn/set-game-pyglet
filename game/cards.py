@@ -1,42 +1,49 @@
+import itertools
 import random
 from itertools import combinations
 
 import pyglet
+from pyglet.shapes import Box
 
-from . import Box, FEATURES
-from .resources import (select_features, create_card_sprites, read_images_from_disk,
-                        create_card_sprites_single_image, read_images_from_disk_single_image)
+from .configuration import config
+from .constants import FEATURES, PATTERNS, SHAPES, COLORS, NUMBERS
 
 
 class Card(pyglet.sprite.Sprite):
     """
     Single Card sprite object
     """
+
     def __init__(self, img, card_color, card_shape, card_pattern, card_number):
         super().__init__(img)
         self.color_name = card_color
         self.shape = card_shape
         self.pattern = card_pattern
         self.number = card_number
-        self.image.anchor_x = self.image.width // 2
-        self.image.anchor_y = self.image.height // 2
+        self._outline = None
 
-        # Coordinates of box at init are out of real window
-        self.box = Box(5000, 5000, 100, 100)
+    def outline_draw(self, batch, group):
+        self._outline = Box(
+            self.x,
+            self.y,
+            self.width + config.outline_box.size,
+            self.height + config.outline_box.size,
+            thickness=config.outline_box.thickness,
+            color=config.outline_box.color,
+            batch=batch,
+            group=group
+        )
+        self._outline.draw()
 
-    def set_position_and_box(self, x, y):
-        """Set position of sprite in window and create box variable"""
-        self.position = (x, y, 0)
-        self.box = Box(x, y, x+self.width, y+self.height)
-
-    def is_in_the_box(self, x, y):
-        """Check if point (x,y) is inside card box (rectangle)"""
-        if self.box.x <= x + self.image.width <= self.box.right \
-                and self.box.y <= y + self.image.height <= self.box.top:
-            return True
+    def outline_delete(self):
+        try:
+            self._outline.delete()
+        except AttributeError:
+            pass
 
     def __str__(self):
-        return "Card: {}, {}, {}, {}".format(self.color_name, self.shape, self.pattern, self.number)
+        return "Card: {}, {}, {}, {}, {}".format(self.color_name, self.shape, self.pattern, self.number,
+                                                 (self.x, self.y, self.width, self.height))
 
 
 class Cards:
@@ -44,27 +51,21 @@ class Cards:
     Manager of all cards that are displayed on the screen
     and generated but hidden for the user
     """
+
     def __init__(self, director, rows, cols, feat_switch):
         self.rows = rows
         self.cols = cols
         self.d = director
 
-        # preload images from disk
-        # TODO: this is slow process (CPU)
-        if self.d.single_image_graphic:
-            seq = read_images_from_disk_single_image('new-sets.png', 9, 9)
-            preloaded = create_card_sprites_single_image(seq, self.d.constants.scale_card_unselected)
-        else:
-            seq = read_images_from_disk()
-            preloaded = create_card_sprites(seq, self.d.constants.scale_card_unselected)
-        self.cards = select_features(preloaded, feat_switch)
+        self.preloaded = create_card_sprites(self.d.seq, self.d.constants.scale_card_unselected)
+        self.cards = select_features(self.preloaded, feat_switch)
         self._check_cards_number(feat_switch)
 
         self.cards_used = []
         self.card_clicked = []
 
         for i in range(self.cols):
-            self.draw_random(i*200)
+            self.draw_random(i * 200 + config.corner_margin.x)
 
     def _check_cards_number(self, feat_switch):
         """
@@ -84,22 +85,29 @@ class Cards:
 
     def draw_selected(self, card, x, y):
         """Set attributes and add to batch a selected card"""
-        card.set_position_and_box(x, y)
+        card.update(x, y)
         card.batch = self.d.batch
 
-    def draw_random(self, x):
+    def draw_random(self, x_offset):
         """
         Draw one column of random cards
 
-        :param x: position offset of first drawn card
+        :param x_offset: x position offset of first drawn card
         """
         cards = [c for c in self.cards if c not in self.cards_used]
         random.shuffle(cards)
         for i, card in enumerate(cards):
             if i >= self.rows:
                 break
-            self.draw_selected(card, x + 100, 150 * i + 100)
+            self.draw_selected(card, x_offset, 150 * i + config.corner_margin.y)
             self.cards_used.append(card)
+
+    def redraw_columns(self, x_sub):
+        """
+        Draw one column of random cards
+        """
+        for card in self.cards_used:
+            card.update(card.x - x_sub, card.y)
 
     def draw_single_random(self, x, y):
         """Draw single random card at given coordinates"""
@@ -150,3 +158,50 @@ class Cards:
         """Number of cards that are not draw on the screen"""
         num = len(self.cards) - len(self.cards_used)
         return num if num >= 0 else 0
+
+
+def select_features(cards, switch):
+    """
+    Remove selected feature from total cards list
+
+    :param cards: list if cards image sprites
+    :param switch: namedtuple with boolean features
+    :return: List of cards after removal selected feature
+    """
+    new_cards = [i for i in cards]
+
+    def remove_cards(attribute, features, lst):
+        if not getattr(switch, attribute):
+            single_feat = random.choice(features)
+            for card in cards:
+                if getattr(card, attribute) != single_feat:
+                    try:
+                        lst.remove(card)
+                    except ValueError:
+                        pass
+
+    for k, v in FEATURES.items():
+        remove_cards(k, v, new_cards)
+
+    return new_cards
+
+
+def create_card_sprites(seq, scale):
+    """
+    Iterate through image sequence and create card sprites
+
+    :return: List containing all cards read from image resources
+    """
+    card_list = []
+    card_seq = iter(seq)
+    for pattern, shape, color, number in itertools.product(PATTERNS, SHAPES, COLORS, NUMBERS):
+        card_sprite = Card(
+            img=card_seq.__next__(),
+            card_color=color,
+            card_shape=shape,
+            card_number=number,
+            card_pattern=pattern
+        )
+        card_sprite.scale = scale
+        card_list.append(card_sprite)
+    return card_list

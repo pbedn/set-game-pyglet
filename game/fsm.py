@@ -1,9 +1,6 @@
-
-def State_init(self, director):
-    self.d = director
-
-
-State = type('State', (), {'__init__': State_init})
+class State:
+    def __init__(self, director):
+        self.d = director
 
 
 class FSM:
