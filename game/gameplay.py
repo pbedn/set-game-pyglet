@@ -128,6 +128,14 @@ class GamePlay(State):
                     self.d.cards.card_clicked.remove(card)
                     card.outline_delete()
 
+    def on_mouse_motion(self, x, y):
+        cursor = self.d.get_system_mouse_cursor(self.d.CURSOR_DEFAULT)
+        self.d.set_mouse_cursor(cursor)
+        for card in self.d.cards.cards_used:
+            if card.is_in_the_box(x, y):
+                cursor = self.d.get_system_mouse_cursor(self.d.CURSOR_HAND)
+                self.d.set_mouse_cursor(cursor)
+
 
 class GameEnd(State):
     def execute(self):

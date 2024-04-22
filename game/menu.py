@@ -2,7 +2,9 @@ from functools import wraps
 
 import pyglet
 from pyglet.window import key
+from pyglet.shapes import Box
 
+from .configuration import config
 from .fsm import State
 from . import (MENU_TEXT_FEATURES_QUICKSTART, FEATURES_QUICKSTART, FEATURES_NORMAL,
                MENU_TEXT_FEATURES_NORMAL, MENU_START_GAME_TEXT, MENU_END_GAME_TEXT,
@@ -12,6 +14,7 @@ from .hud import TextBase
 
 def _formatter(func):
     """Change font attributes of previous and current menu item selection"""
+
     @wraps(func)
     def wrapper(self, *args, **kwargs):
         self.d.current_selection.bold = False
@@ -20,12 +23,16 @@ def _formatter(func):
         self.d.current_selection = self.d.menu_items[self.d.current_index]
         self.d.current_selection.bold = True
         self.d.current_selection.font_size += 10
+
     return wrapper
 
 
 class GameMenu(State):
     def __init__(self, *args):
         super().__init__(*args)
+        self.start_box = None
+        self.option_box = None
+        self.exit_box = None
 
     @_formatter
     def selection_up(self):
@@ -46,12 +53,50 @@ class GameMenu(State):
         """Remove menu text objects and transition to game"""
         for item in self.d.menu_items:
             item.delete()
+        self.start_box.delete()
+        self.option_box.delete()
+        self.exit_box.delete()
         self.d.fsm.transition('toGAME')
 
+    def menu_boxes(self, batch):
+        self.start_box = Box(
+            300, 350, 450 + config.outline_box.size,
+            85 + config.outline_box.size,
+            thickness=1,
+            color=config.outline_box.color,
+            batch=batch
+        )
+        # self.start_box.visible = False
+        self.start_box.draw()
+        self.option_box = Box(
+            300, 250, 450 + config.outline_box.size,
+            85 + config.outline_box.size,
+            thickness=1,
+            color=config.outline_box.color,
+            batch=batch
+        )
+        # self.option_box.visible = False
+        self.option_box.draw()
+        self.exit_box = Box(
+            300, 150, 450 + config.outline_box.size,
+            85 + config.outline_box.size,
+            thickness=1,
+            color=config.outline_box.color,
+            batch=batch
+        )
+        # self.exit_box.visible = False
+        self.exit_box.draw()
+
+    @staticmethod
+    def is_in_the_box(box, x, y):
+        if box.x <= x <= box.x + box.width and box.y <= y <= box.y + box.height:
+            return True
+
     def execute(self):
-        if self.d.keys[key.DOWN]:
+        self.menu_boxes(self.d.batch)
+        if self.d.keys[key.DOWN] and self.d.current_index < 2:
             self.selection_down()
-        elif self.d.keys[key.UP]:
+        elif self.d.keys[key.UP] and self.d.current_index > 0:
             self.selection_up()
 
         elif self.d.current_index == 1:
@@ -69,6 +114,31 @@ class GameMenu(State):
                 pass
             elif self.d.current_index == 2:
                 pyglet.app.exit()
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        if self.is_in_the_box(self.start_box, x, y):
+            self.start_game()
+        elif self.is_in_the_box(self.option_box, x, y):
+            if self.d.current_selection.text == MENU_TEXT_FEATURES_QUICKSTART:
+                self.d.set_feature = FEATURES_NORMAL
+                self.d.current_selection.text = MENU_TEXT_FEATURES_NORMAL
+            else:
+                self.d.set_feature = FEATURES_QUICKSTART
+                self.d.current_selection.text = MENU_TEXT_FEATURES_QUICKSTART
+        elif self.is_in_the_box(self.exit_box, x, y):
+            pyglet.app.exit()
+
+    @_formatter
+    def select_index(self, i):
+        self.d.current_index = i
+
+    def on_mouse_motion(self, x, y):
+        if self.is_in_the_box(self.start_box, x, y):
+            self.select_index(0)
+        elif self.is_in_the_box(self.option_box, x, y):
+            self.select_index(1)
+        elif self.is_in_the_box(self.exit_box, x, y):
+            self.select_index(2)
 
 
 class TransitionToMenu(State):

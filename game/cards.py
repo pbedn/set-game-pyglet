@@ -40,7 +40,10 @@ class Card(pyglet.sprite.Sprite):
         self._outline.draw()
 
     def outline_delete(self):
-        self._outline.delete()
+        try:
+            self._outline.delete()
+        except AttributeError:
+            pass
 
     def __str__(self):
         return "Card: {}, {}, {}, {}, {}".format(self.color_name, self.shape, self.pattern, self.number,

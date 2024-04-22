@@ -18,7 +18,7 @@ class GameDirector(pyglet.window.Window):
         self.frame_rate = 0.1
         self.batch = pyglet.graphics.Batch()
 
-        cursor = self.get_system_mouse_cursor(self.CURSOR_HAND)
+        cursor = self.get_system_mouse_cursor(self.CURSOR_DEFAULT)
         self.set_mouse_cursor(cursor)
 
         self.first_run = [True] * 2
@@ -50,6 +50,7 @@ class GameDirector(pyglet.window.Window):
             return
         if len(self.cards.cards_used) > 0:
             for c in self.cards.cards_used:
+                c.outline_delete()
                 c.delete()
             self.cards.cards_used = []
         self.score.delete()
@@ -65,12 +66,18 @@ class GameDirector(pyglet.window.Window):
         self.logo.delete()
 
     def on_mouse_press(self, x, y, button, modifiers):
-        """
-        This method should be inside GamePlay
-        but mouse functionality cannot be moved in a way like keys handler
-        """
+        """Global mouse press"""
         if button == mouse.LEFT and self.fsm.cur_state == self.fsm.states['GAME']:
             self.fsm.states['GAME'].on_mouse_press(x, y, button, modifiers)
+        if button == mouse.LEFT and self.fsm.cur_state == self.fsm.states['MENU']:
+            self.fsm.states['MENU'].on_mouse_press(x, y, button, modifiers)
+
+    def on_mouse_motion(self, x, y, dx, dy):
+        """Global mouse motion"""
+        if self.fsm.cur_state == self.fsm.states['GAME']:
+            self.fsm.states['GAME'].on_mouse_motion(x, y)
+        if self.fsm.cur_state == self.fsm.states['MENU']:
+            self.fsm.states['MENU'].on_mouse_motion(x, y)
 
     def on_key_press(self, symbol, modifiers):
         """Global key shortcuts"""
