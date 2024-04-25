@@ -1,17 +1,18 @@
+from __future__ import annotations
+
 import pyglet
 from pyglet.window import key, mouse
 
-from .gameplay import GamePlay, GameEnd, TransitionToGame, TransitionToEnd
-from .menu import GameMenu, TransitionToMenu
 from .constants import Constants
 from .fsm import FSM
+from .gameplay import GameEnd, GamePlay, TransitionToEnd, TransitionToGame
+from .menu import GameMenu, TransitionToMenu
 from .resources import read_images_from_disk
 
 
 class GameDirector(pyglet.window.Window):
-    """
-    Game Director managing all actions
-    """
+    """Game Director managing all actions"""
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.set_location(50, 50)  # location of upper left window corner
@@ -36,14 +37,14 @@ class GameDirector(pyglet.window.Window):
 
         # Set GAME Finite State Machine states and transitions
         self.fsm = FSM()
-        self.fsm.states['MENU'] = GameMenu(self)
-        self.fsm.states['GAME'] = GamePlay(self)
-        self.fsm.states['END'] = GameEnd(self)
-        self.fsm.transitions['toMENU'] = TransitionToMenu('MENU', self)
-        self.fsm.transitions['toGAME'] = TransitionToGame('GAME', self)
-        self.fsm.transitions['toEND'] = TransitionToEnd('END', self)
+        self.fsm.states["MENU"] = GameMenu(self)
+        self.fsm.states["GAME"] = GamePlay(self)
+        self.fsm.states["END"] = GameEnd(self)
+        self.fsm.transitions["toMENU"] = TransitionToMenu("MENU", self)
+        self.fsm.transitions["toGAME"] = TransitionToGame("GAME", self)
+        self.fsm.transitions["toEND"] = TransitionToEnd("END", self)
 
-        self.fsm.transition('toMENU')
+        self.fsm.transition("toMENU")
 
     def delete_all_objects(self):
         """Remove all visible sprite cards and text labels from screen"""
@@ -66,7 +67,7 @@ class GameDirector(pyglet.window.Window):
         except AttributeError:
             pass
         self.logo.delete()
-        # todo: global objects aggregator then loop over it would be better
+        # TODO: global objects aggregator then loop over it would be better
         # group ?
         self.menu_box.delete()
         self.menu_btn.delete()
@@ -78,19 +79,19 @@ class GameDirector(pyglet.window.Window):
 
     def on_mouse_press(self, x, y, button, modifiers):
         """Global mouse press"""
-        if button == mouse.LEFT and self.fsm.cur_state == self.fsm.states['GAME']:
-            self.fsm.states['GAME'].on_mouse_press(x, y, button, modifiers)
-        elif button == mouse.LEFT and self.fsm.cur_state == self.fsm.states['END']:
-            self.fsm.states['END'].on_mouse_press(x, y, button, modifiers)
-        elif button == mouse.LEFT and self.fsm.cur_state == self.fsm.states['MENU']:
-            self.fsm.states['MENU'].on_mouse_press(x, y, button, modifiers)
+        if button == mouse.LEFT and self.fsm.cur_state == self.fsm.states["GAME"]:
+            self.fsm.states["GAME"].on_mouse_press(x, y, button, modifiers)
+        elif button == mouse.LEFT and self.fsm.cur_state == self.fsm.states["END"]:
+            self.fsm.states["END"].on_mouse_press(x, y, button, modifiers)
+        elif button == mouse.LEFT and self.fsm.cur_state == self.fsm.states["MENU"]:
+            self.fsm.states["MENU"].on_mouse_press(x, y, button, modifiers)
 
     def on_mouse_motion(self, x, y, dx, dy):
         """Global mouse motion"""
-        if self.fsm.cur_state == self.fsm.states['GAME']:
-            self.fsm.states['GAME'].on_mouse_motion(x, y)
-        elif self.fsm.cur_state == self.fsm.states['MENU']:
-            self.fsm.states['MENU'].on_mouse_motion(x, y)
+        if self.fsm.cur_state == self.fsm.states["GAME"]:
+            self.fsm.states["GAME"].on_mouse_motion(x, y)
+        elif self.fsm.cur_state == self.fsm.states["MENU"]:
+            self.fsm.states["MENU"].on_mouse_motion(x, y)
 
     def on_key_press(self, symbol, modifiers):
         """Global key shortcuts"""

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import itertools
 import random
 from itertools import combinations
@@ -6,13 +8,11 @@ import pyglet
 from pyglet.shapes import Box
 
 from .configuration import config
-from .constants import FEATURES, PATTERNS, SHAPES, COLORS, NUMBERS
+from .constants import COLORS, FEATURES, NUMBERS, PATTERNS, SHAPES
 
 
 class Card(pyglet.sprite.Sprite):
-    """
-    Single Card sprite object
-    """
+    """Single Card sprite object"""
 
     def __init__(self, img, card_color, card_shape, card_pattern, card_number):
         super().__init__(img)
@@ -31,7 +31,7 @@ class Card(pyglet.sprite.Sprite):
             thickness=config.outline_box.thickness,
             color=config.outline_box.color,
             batch=batch,
-            group=group
+            group=group,
         )
         self._outline.draw()
 
@@ -42,13 +42,11 @@ class Card(pyglet.sprite.Sprite):
             pass
 
     def __str__(self):
-        return "Card: {}, {}, {}, {}, {}".format(self.color_name, self.shape, self.pattern, self.number,
-                                                 (self.x, self.y, self.width, self.height))
+        return f"Card: {self.color_name}, {self.shape}, {self.pattern}, {self.number}, {(self.x, self.y, self.width, self.height)}"
 
 
 class Cards:
-    """
-    Manager of all cards that are displayed on the screen
+    """Manager of all cards that are displayed on the screen
     and generated but hidden for the user
     """
 
@@ -57,7 +55,9 @@ class Cards:
         self.cols = cols
         self.d = director
 
-        self.preloaded = create_card_sprites(self.d.seq, self.d.constants.scale_card_unselected)
+        self.preloaded = create_card_sprites(
+            self.d.seq, self.d.constants.scale_card_unselected
+        )
         self.cards = select_features(self.preloaded, feat_switch)
         self._check_cards_number(feat_switch)
 
@@ -68,8 +68,7 @@ class Cards:
             self.draw_random(i * 200 + config.corner_margin.x)
 
     def _check_cards_number(self, feat_switch):
-        """
-        Assert that number of cards after feature removal is correct
+        """Assert that number of cards after feature removal is correct
         All four features should have 81 cards
         Quickstart game (one feature off) - 27 cards
         """
@@ -77,7 +76,9 @@ class Cards:
         for attribute in FEATURES.keys():
             if not getattr(feat_switch, attribute):
                 total /= 3
-        assert len(self.cards) == total, "Number of cards after features removal is wrong"
+        assert (
+            len(self.cards) == total
+        ), "Number of cards after features removal is wrong"
 
     def __iter__(self):
         for card in self.cards:
@@ -89,8 +90,7 @@ class Cards:
         card.batch = self.d.batch
 
     def draw_random(self, x_offset):
-        """
-        Draw one column of random cards
+        """Draw one column of random cards
 
         :param x_offset: x position offset of first drawn card
         """
@@ -103,9 +103,7 @@ class Cards:
             self.cards_used.append(card)
 
     def redraw_columns(self, x_sub):
-        """
-        Draw one column of random cards
-        """
+        """Draw one column of random cards"""
         for card in self.cards_used:
             card.outline_delete()
             card.update(card.x - x_sub, card.y)
@@ -120,23 +118,23 @@ class Cards:
 
     @staticmethod
     def check_if_cards_are_set(cards_list):
-        """
-        Detailed conditions for correct set are described in README.
+        """Detailed conditions for correct set are described in README.
         If set consists of one or three elements then it is correct
         according to game rules, therefore it has to be different than 2
         """
         assert len(cards_list) == 3, "Cards clicked length should be 3"
         result = True
         for attribute in FEATURES.keys():
-            set_a = {getattr(cards_list[0], attribute),
-                     getattr(cards_list[1], attribute),
-                     getattr(cards_list[2], attribute)}
+            set_a = {
+                getattr(cards_list[0], attribute),
+                getattr(cards_list[1], attribute),
+                getattr(cards_list[2], attribute),
+            }
             result = result and len(set_a) != 2
         return result
 
     def check_if_set_exists_in_cards_used(self):
-        """
-        Iterate through all cards drawn on screen
+        """Iterate through all cards drawn on screen
         make combinations of three cards from them
         And check if they are a set
         """
@@ -146,7 +144,11 @@ class Cards:
         return True if True in result else False
 
     def get_two_cards_from_random_set(self):
-        list_of_sets = [c for c in combinations(self.cards_used, 3) if self.check_if_cards_are_set(c)]
+        list_of_sets = [
+            c
+            for c in combinations(self.cards_used, 3)
+            if self.check_if_cards_are_set(c)
+        ]
         self.number_of_sets_left = len(list_of_sets)
         if self.number_of_sets_left > 0:
             random.shuffle(list_of_sets)
@@ -162,8 +164,7 @@ class Cards:
 
 
 def select_features(cards, switch):
-    """
-    Remove selected feature from total cards list
+    """Remove selected feature from total cards list
 
     :param cards: list if cards image sprites
     :param switch: namedtuple with boolean features
@@ -188,20 +189,21 @@ def select_features(cards, switch):
 
 
 def create_card_sprites(seq, scale):
-    """
-    Iterate through image sequence and create card sprites
+    """Iterate through image sequence and create card sprites
 
     :return: List containing all cards read from image resources
     """
     card_list = []
     card_seq = iter(seq)
-    for pattern, shape, color, number in itertools.product(PATTERNS, SHAPES, COLORS, NUMBERS):
+    for pattern, shape, color, number in itertools.product(
+        PATTERNS, SHAPES, COLORS, NUMBERS
+    ):
         card_sprite = Card(
             img=card_seq.__next__(),
             card_color=color,
             card_shape=shape,
             card_number=number,
-            card_pattern=pattern
+            card_pattern=pattern,
         )
         card_sprite.scale = scale
         card_list.append(card_sprite)

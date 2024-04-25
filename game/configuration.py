@@ -1,17 +1,16 @@
 # Colors from https://flatuicolors.com/palette/defo
-
-from typing import Tuple
+from __future__ import annotations
 
 
 class Pixel(int):
     pass
 
 
-class RGB(Tuple[int, int, int, int | None]):
+class RGB(tuple[int, int, int, int | None]):
     pass
 
 
-class RGB01(Tuple[int, int, int, int | None]):
+class RGB01(tuple[int, int, int, int | None]):
     pass
 
 
@@ -33,7 +32,7 @@ class OutlineBox:
 
 class BackgroundColor:
     # Color Wet Asphalt
-    hex: HEX = '2c3e50'
+    hex: HEX = "2c3e50"
     color: RGB = (44, 62, 80)
     rgb01: RGB01 = (0.204, 0.286, 0.369, 1.0)
 

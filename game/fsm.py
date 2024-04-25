@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 class State:
     def __init__(self, director):
         self.d = director

@@ -1,12 +1,14 @@
+from __future__ import annotations
+
 from functools import wraps
 
 import pyglet
-from pyglet.window import key
 from pyglet.shapes import Box
+from pyglet.window import key
 
 from .configuration import config
-from .fsm import State
 from .constants import *
+from .fsm import State
 from .hud import TextBase
 
 
@@ -54,14 +56,14 @@ class GameMenu(State):
         self.start_box.delete()
         self.option_box.delete()
         self.exit_box.delete()
-        self.d.fsm.transition('toGAME')
+        self.d.fsm.transition("toGAME")
 
     def menu_boxes(self, batch):
         self.start_box = Box(
             285, 400, 460, 85,
             thickness=1,
             color=config.outline_box.color,
-            batch=batch
+            batch=batch,
         )
         # self.start_box.visible = False
         self.start_box.draw()
@@ -69,7 +71,7 @@ class GameMenu(State):
             285, 300, 460, 85,
             thickness=1,
             color=config.outline_box.color,
-            batch=batch
+            batch=batch,
         )
         # self.option_box.visible = False
         self.option_box.draw()
@@ -77,7 +79,7 @@ class GameMenu(State):
             285, 200, 460, 85,
             thickness=1,
             color=config.outline_box.color,
-            batch=batch
+            batch=batch,
         )
         # self.exit_box.visible = False
         self.exit_box.draw()
@@ -139,40 +141,54 @@ class TransitionToMenu(State):
     def execute(self):
         self.d.delete_all_objects()
 
-        start_game_menu_item = TextBase(self.d.width // 2,
-                                        self.d.height // 2 + 150,
-                                        MENU_START_GAME_TEXT,
-                                        batch=self.d.batch)
+        start_game_menu_item = TextBase(
+            self.d.width // 2,
+            self.d.height // 2 + 150,
+            MENU_START_GAME_TEXT,
+            batch=self.d.batch,
+        )
         start_game_menu_item.bold = True
         start_game_menu_item.font_size += 10
-        features_menu_item = TextBase(self.d.width // 2,
-                                      self.d.height // 2 + 50,
-                                      MENU_TEXT_FEATURES_QUICKSTART,
-                                      batch=self.d.batch)
-        end_game_menu_item = TextBase(self.d.width // 2,
-                                      self.d.height // 2 - 50,
-                                      MENU_END_GAME_TEXT,
-                                      batch=self.d.batch)
-        self.d.menu_items = [start_game_menu_item, features_menu_item, end_game_menu_item]
+        features_menu_item = TextBase(
+            self.d.width // 2,
+            self.d.height // 2 + 50,
+            MENU_TEXT_FEATURES_QUICKSTART,
+            batch=self.d.batch,
+        )
+        end_game_menu_item = TextBase(
+            self.d.width // 2,
+            self.d.height // 2 - 50,
+            MENU_END_GAME_TEXT,
+            batch=self.d.batch,
+        )
+        self.d.menu_items = [
+            start_game_menu_item,
+            features_menu_item,
+            end_game_menu_item,
+        ]
         self.d.current_index = 0
         self.d.current_selection = self.d.menu_items[0]
 
         self.d.set_feature = FEATURES_QUICKSTART
 
-        help_menu_item = TextBase(self.d.width // 2,
-                                  self.d.height // 6,
-                                  HELP_TEXT,
-                                  batch=self.d.batch,
-                                  multiline=True,
-                                  width=self.d.width)
+        help_menu_item = TextBase(
+            self.d.width // 2,
+            self.d.height // 6,
+            HELP_TEXT,
+            batch=self.d.batch,
+            multiline=True,
+            width=self.d.width,
+        )
         help_menu_item.font_size -= 18
         self.d.menu_items.append(help_menu_item)
 
-        help_menu_item2 = TextBase(self.d.width // 2 + 400,
-                                   self.d.height // 6,
-                                   HELP_TEXT_2,
-                                   batch=self.d.batch,
-                                   multiline=True,
-                                   width=self.d.width)
+        help_menu_item2 = TextBase(
+            self.d.width // 2 + 400,
+            self.d.height // 6,
+            HELP_TEXT_2,
+            batch=self.d.batch,
+            multiline=True,
+            width=self.d.width,
+        )
         help_menu_item2.font_size -= 18
         self.d.menu_items.append(help_menu_item2)

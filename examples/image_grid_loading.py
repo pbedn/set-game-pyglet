@@ -1,6 +1,6 @@
+"""How pyglet splits image into a grid ?
 """
-How pyglet splits image into a grid ?
-"""
+from __future__ import annotations
 
 import pyglet
 from pyglet.shapes import Box
@@ -9,7 +9,7 @@ window = pyglet.window.Window(resizable=True)
 
 batch = pyglet.graphics.Batch()
 
-pyglet.resource.path = ['.']
+pyglet.resource.path = ["."]
 pyglet.resource.reindex()
 
 
@@ -35,7 +35,7 @@ def create_sprites(seq):
     return sprite_list
 
 
-seq = read_image('new-sets.png', 9, 9, center=True)
+seq = read_image("new-sets.png", 9, 9, center=True)
 sprites = create_sprites(seq)
 
 s = sprites[0]
@@ -53,15 +53,18 @@ def on_draw():
     sprites[80].y = 200
     sprites[80].draw()
 
+
 @window.event
 def on_mouse_press(x, y, button, modifiers):
     if rectangle.x < x < rectangle.x + rectangle.width and rectangle.y < y < rectangle.y + rectangle.width:
         print(x, y)
+
 
 @window.event
 def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
     if rectangle.x < x < rectangle.x + rectangle.width and rectangle.y < y < rectangle.y + rectangle.width:
         rectangle.x += dx
         rectangle.y += dy
+
 
 pyglet.app.run()

@@ -1,22 +1,23 @@
+from __future__ import annotations
+
 import random
 
 from pyglet.shapes import Box
-
 from pyglet.window import key
 
+from .cards import Cards
 from .configuration import config
 from .constants import *
-from .cards import Cards
 from .fsm import State
-from .hud import TextCountable, TextBase
+from .hud import TextBase, TextCountable
 
 
 class GamePlay(State):
     def execute(self):
         if self.d.keys[key.R]:
-            self.d.fsm.transition('toGAME')
+            self.d.fsm.transition("toGAME")
         if self.d.keys[key.F10]:
-            self.d.fsm.transition('toMENU')
+            self.d.fsm.transition("toMENU")
         if self.d.keys[key.N] and not self.d.new_column_used:
             self.add_new_column()
             self.d.new_column_used = True
@@ -50,7 +51,9 @@ class GamePlay(State):
                     self.remove_old_card_and_add_new_one(c, add_new_cards)
             else:
                 # un-select them, and decrease score
-                self.d.score.count = self.d.score.count - 1 if self.d.score.count > 0 else 0
+                self.d.score.count = (
+                    self.d.score.count - 1 if self.d.score.count > 0 else 0
+                )
                 for c in self.d.cards.card_clicked:
                     c.outline_delete()
 
@@ -63,7 +66,7 @@ class GamePlay(State):
 
         # end of game when there are no left sets
         if not self.d.cards.check_if_set_exists_in_cards_used():
-            self.d.fsm.transition('toEND')
+            self.d.fsm.transition("toEND")
 
     def display_hint(self):
         """Select and scale up two cards"""
@@ -77,9 +80,10 @@ class GamePlay(State):
     def display_text_hint(self):
         """Display number of sets left when hint is requested"""
         txt = HINT_SETS_COUNT_TEXT.format(self.d.cards.number_of_sets_left)
-        self.d.cards_number_display_hint = TextBase(self.d.width // 2 + 100, self.d.height - 75, txt,
-                                                    batch=self.d.batch)
-        self.d.cards_number_display_hint.anchor_x = 'right'
+        self.d.cards_number_display_hint = TextBase(
+            self.d.width // 2 + 100, self.d.height - 75, txt, batch=self.d.batch
+        )
+        self.d.cards_number_display_hint.anchor_x = "right"
         self.d.cards_number_display_hint.font_size -= 5
 
     def remove_text_hint(self):
@@ -90,8 +94,7 @@ class GamePlay(State):
             pass
 
     def remove_old_card_and_add_new_one(self, c, add_new_cards):
-        """
-        First remove card from cards list and its sprite
+        """First remove card from cards list and its sprite
         next add new in the same place
         """
         old_x, old_y = c.x, c.y
@@ -123,7 +126,7 @@ class GamePlay(State):
                     self.d.cards.card_clicked.remove(card)
                     card.outline_delete()
         if self.d.is_in_the_box(self.d.menu_box, x, y):
-            self.d.fsm.transition('toMENU')
+            self.d.fsm.transition("toMENU")
 
     def on_mouse_motion(self, x, y):
         cursor = self.d.get_system_mouse_cursor(self.d.CURSOR_DEFAULT)
@@ -137,13 +140,13 @@ class GamePlay(State):
 class GameEnd(State):
     def execute(self):
         if self.d.keys[key.R]:
-            self.d.fsm.transition('toGAME')
+            self.d.fsm.transition("toGAME")
         if self.d.keys[key.F10]:
-            self.d.fsm.transition('toMENU')
+            self.d.fsm.transition("toMENU")
 
     def on_mouse_press(self, x, y, button, modifiers):
         if self.d.is_in_the_box(self.d.menu_box, x, y):
-            self.d.fsm.transition('toMENU')
+            self.d.fsm.transition("toMENU")
 
 
 class TransitionToGame(State):
@@ -167,37 +170,46 @@ class TransitionToGame(State):
         self.d.cards = Cards(self.d, rows=3, cols=4, feat_switch=feat_switch)
 
         # initialize upper hud text
-        self.d.score = TextCountable(self.d.width - 180,
-                                     self.d.height - 20,
-                                     RIGHT_HUD_TEXT,
-                                     batch=self.d.batch)
+        self.d.score = TextCountable(
+            self.d.width - 180, self.d.height - 20, RIGHT_HUD_TEXT, batch=self.d.batch
+        )
         self.d.score.font_size -= 10
         self.d.score.count = 0
-        self.d.cards_number_display = TextCountable(self.d.width - 450,
-                                                    self.d.height - 20,
-                                                    LEFT_HUD_TEXT,
-                                                    batch=self.d.batch)
+        self.d.cards_number_display = TextCountable(
+            self.d.width - 450, self.d.height - 20, LEFT_HUD_TEXT, batch=self.d.batch
+        )
         self.d.cards_number_display.font_size -= 10
         self.d.cards_number_display.count = self.d.cards.number_of_cards_left()
         self.d.logo = TextBase(
-            260, self.d.height - 20,
-            "Mode: {}".format(self.d.set_feature), font_size=20, align='left',
-            batch=self.d.batch)
+            260,
+            self.d.height - 20,
+            f"Mode: {self.d.set_feature}",
+            font_size=20,
+            align="left",
+            batch=self.d.batch,
+        )
         self.d.logo.font_size -= 10
 
         self.d.menu_btn = TextBase(
-            60, self.d.height - 20,
-            "Menu".format(self.d.set_feature),
-            batch=self.d.batch, group=self.d.foreground)
+            60,
+            self.d.height - 20,
+            "Menu".format(),
+            batch=self.d.batch,
+            group=self.d.foreground,
+        )
         self.d.menu_btn.font_size -= 10
         self.d.menu_box = Box(
-            0, self.d.height - 45, 120, 45,
+            0,
+            self.d.height - 45,
+            120,
+            45,
             thickness=1,
             color=config.outline_box.color,
-            batch=self.d.batch, group=self.d.foreground
+            batch=self.d.batch,
+            group=self.d.foreground,
         )
 
-        self.d.fsm.set_state('GAME')
+        self.d.fsm.set_state("GAME")
 
 
 class TransitionToEnd(State):
@@ -212,7 +224,9 @@ class TransitionToEnd(State):
                 c.delete()
             self.d.cards.cards_used = []
 
-        self.d.text_end_game = TextBase(self.d.width // 2, self.d.height // 2, END_GAME_TEXT, batch=self.d.batch)
+        self.d.text_end_game = TextBase(
+            self.d.width // 2, self.d.height // 2, END_GAME_TEXT, batch=self.d.batch
+        )
         self.d.text_end_game.font_size += 10
 
-        self.d.fsm.set_state('END')
+        self.d.fsm.set_state("END")
