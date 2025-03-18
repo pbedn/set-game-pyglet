@@ -71,7 +71,7 @@ At current state game is finished and playable.
 
 ### Development env
 
-Python version: 3.11
+Python version: 3.11 - 3.13
 
 ```
 pip install -r requirements.txt
